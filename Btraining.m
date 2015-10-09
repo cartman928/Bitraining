@@ -37,29 +37,39 @@ RX2 = dummy_RX2(2,1)+noise;
 
 %Receivers
 
-gc_1 = [1;1];
-gp_1 = [1;1];
-gc_2 = [1;1];
-gp_2 = [1;1];
 
-sigma = 0.2;
+sigma = 0.2;%Square Root of Noise Variance
 k=1;
 
 
-sum0(:,k) = [0;0];
+sum_c1(:,k) = [0;0];
 for j = 1:2
     if j~=k
-        sum0(:,k) = sum0(:,k) + H(k,j)*vc(:,j);
+        sum_c1(:,k) = sum_c1(:,k) + H(k,j)*vc(:,j);
     end
 end
 
-gc(:,k)=inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum0(:,k)*sum0(:,k)'+H(k,k)*vc(:,k)*sum0(:,k)'+sum0(:,k)*)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2)
+sum_p1(:,k) = [0;0];
+for j = 1:2
+    if j~=k
+        sum_p1(:,k) = sum_p1(:,k) + H(k,j)*vp(:,j);
+    end
+end
+
+sum_c2(:,k) = [0;0];
+for j = 1:2
+        sum_c2(:,k) = sum_c2(:,k) + H(k,j)*vc(:,j);
+end
 
 
 
 
+gc(:,k)=inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( sum_c2(:,k) );
+gp(:,k)=inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( H(k,k)*vp(:,k) );
 
-%k=2;
+
+
+ %k=2;
 %gc(k)=2;
 
 
