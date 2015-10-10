@@ -64,9 +64,14 @@ end
 
 
 
-gc(:,k)=inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( sum_c2(:,k) );
-gp(:,k)=inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( H(k,k)*vp(:,k) );
+gc(:,k) = inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( sum_c2(:,k) );
+gp(:,k) = inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)'+sum_c1(:,k)*sum_c1(:,k)'+H(k,k)*vc(:,k)*sum_c1(:,k)'+sum_c1(:,k)*vc(:,k)'*H(k,k)'+eye(2)*sigma^2+H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)'+sum_p1(:,k)*sum_p1(:,k)'  ) * ( H(k,k)*vp(:,k) );
 
+vc(:,k) = -2*gc(:,k)-2*lambda(k)
+
+
+
+vp(:,k)=;
 
 
  %k=2;
