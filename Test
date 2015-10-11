@@ -1,0 +1,79 @@
+%Beamformer and Receivers for the very first iteration
+
+vc(:,1) = [1;1];
+vp(:,1) = [1;1];
+vc(:,2) = [1;1];
+vp(:,2) = [1;1];
+gc(:,1) = [1;1];
+gp(:,1) = [1;1];
+gc(:,2) = [1;1];
+gp(:,2) = [1;1];
+
+%Channel
+
+H{1,1}=[0.8 0.7;0.9 0.75];
+H{1,2}=[0.7 0.7;0.75 0.75];
+H{2,1}=[0.9 0.93;0.73 0.6];
+H{2,2}=[0.69 0.73;0.69 0.91];
+sigma = 0.02;%Square Root of Noise Variance
+
+for i = 1:100000 %Number of iterations
+
+        %Random Source Message
+        %Common Message
+        if rand-0.5 >= 0
+                    x(i) = 1;
+                else
+                    x(i) = -1;
+        end
+
+        %Private Message for User#1
+        if rand-0.5 >= 0
+                    xp(i,1) = 1;
+                else
+                    xp(i,1) = -1;
+        end
+
+        %Private Message for User#2
+        if rand-0.5 >= 0
+                    xp(i,2) = 1;
+                else
+                    xp(i,2) = -1;
+        end
+
+
+        %Calculate Receivers then Transmitters
+        StepSize=0.0001;
+        for k = 1:2
+
+            u(:,k) = [0;0];
+            for j = 1:2
+                    u(:,k) = u(:,k) + H{k,j}*(vc(:,j)*x(i)+vp(:,j)*xp(i,j));
+            end
+      
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(i)-gc(:,k)'*u(:,k));
+            gp(:,k) = gp(:,k)+StepSize*u(:,k)*(xp(i,j)-gp(:,k)'*u(:,k));
+
+        end
+        
+        for k = 1:2
+
+            u(:,k) = [0;0];
+            for j = 1:2
+                    u(:,k) = u(:,k) + (H{j,k}).'*(gc(:,j)*x(i)+gp(:,j)*xp(i,j));
+            end
+      
+            vc(:,k) = vc(:,k)+StepSize*u(:,k)*(x(i)-vc(:,k)'*u(:,k));
+            vp(:,k) = vp(:,k)+StepSize*u(:,k)*(xp(i,j)-vp(:,k)'*u(:,k))
+
+        end
+
+end
+
+
+
+
+
+
+
+
