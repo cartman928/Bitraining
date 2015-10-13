@@ -28,7 +28,7 @@ H=[1 1;1 1]
 
 sigma = 0.0001;
 
-for iter = 1:10000 %Number of iterations
+for iter = 1:100 %Number of iterations
 
         %Random Source Message
         %Common Message
@@ -55,7 +55,7 @@ for iter = 1:10000 %Number of iterations
 
         %Calculate Receivers then Transmitters
 
-        for k = 1:2
+        for k = 1:2 %For user 1 and 2
 
             sum_c1_f(:,k) = 0;
             for j = 1:2
@@ -79,7 +79,7 @@ for iter = 1:10000 %Number of iterations
 
             gc(:,k) = inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)' + H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H(k,k)*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H(k,k)'+eye(1)*sigma^2  ) * ( sum_c2_f(:,k) )     
             gp(:,k) = inv(  H(k,k)*vc(:,k)*vc(:,k)'*H(k,k)' + H(k,k)*vp(:,k)*vp(:,k)'*H(k,k)' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H(k,k)*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H(k,k)'+eye(1)*sigma^2  ) * ( H(k,k)*vp(:,k) )
-         
+            
 
         end
         
@@ -90,7 +90,7 @@ for iter = 1:10000 %Number of iterations
         bp_2(iter)=gp(:,2)'*(      H(2,1)*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H(2,2)*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2))  );
 
 
-        for k = 1:2
+        for k = 1:2 %For user 1 and 2
 
             sum_c1_b(:,k) = 0;
             for j = 1:2
@@ -113,7 +113,7 @@ for iter = 1:10000 %Number of iterations
 
             vc(:,k) = inv(  H(k,k)*gc(:,k)*gc(:,k)'*H(k,k)'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H(k,k)*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*H(k,k)'+eye(1)*sigma^2+H(k,k)*gp(:,k)*gp(:,k)'*H(k,k)'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( sum_c2_b(:,k) )
             vp(:,k) = inv(  H(k,k)*gc(:,k)*gc(:,k)'*H(k,k)'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H(k,k)*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*H(k,k)'+eye(1)*sigma^2+H(k,k)*gp(:,k)*gp(:,k)'*H(k,k)'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( H(k,k)*gp(:,k) )
-
+            
         end
 
 end
