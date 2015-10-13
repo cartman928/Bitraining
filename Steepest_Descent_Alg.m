@@ -1,3 +1,5 @@
+clc
+clear
 %Beamformer for the very first iteration
 vc(:,1) = [1;1]/norm([1;1]);
 vp(:,1) = [1;1]/norm([1;1]);
@@ -75,7 +77,7 @@ for iter = 1:1000 %Number of iterations
 
         end
         
-        %Decoding
+        %%Decoding
         bc_1(iter)=sign(  gc(:,1)'*(      H{1,1}*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H{1,2}*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2)) + sigma*[rand;rand] )  );
         bp_1(iter)=sign(  gp(:,1)'*(      H{1,1}*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H{1,2}*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2)) + sigma*[rand;rand] )  );
         bc_2(iter)=sign(  gc(:,2)'*(      H{2,1}*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H{2,2}*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2)) + sigma*[rand;rand] )  );
@@ -111,12 +113,14 @@ for iter = 1:1000 %Number of iterations
 
 end
 
-
+%{
 error=0;
 for k = 101:1000
                     error = error + abs(x(k)-bc_1(k))+abs(x(k)-bc_2(k))+abs(x(k)-bc_2(k))+abs(xp_1(k)-bp_1(k))+abs(xp_2(k)-bp_2(k));
             end
 4*900-error
+%}
+
 %{
 x(9991:10000)
 bc_1(9991:10000)
