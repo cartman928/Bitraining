@@ -1,3 +1,5 @@
+clc
+clear
 %Beamformer and Receivers for the very first iteration
 
 vc(:,1) = [1;1]/norm([1;1]);
@@ -23,7 +25,7 @@ H{2,1}=[1 1;1 1];
 H{2,2}=[1 1;1 1];
 
 sigma = 10^(-2);
-StepSize=10^(-3);
+StepSize=10^(-5);
 
 
 %{
@@ -35,7 +37,7 @@ H{2,2}=[1 1;1 1];
 sigma = 0.001;
 %}
 
-for iter = 1:1000 %Number of iterations
+for iter = 1:100000 %Number of iterations
 
         %Random Source Message
         %Common Message
@@ -77,7 +79,7 @@ for iter = 1:1000 %Number of iterations
                 m=1;
             end
             
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k)-gc(:,m)'*u(:,m));  gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k)-gc(:,m)'*u(:,m));  gc(:,k) = gc(:,k)/norm(gc(:,k))%normailize
             %gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k));  gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
             gp(:,k) = gp(:,k)+StepSize*u(:,k)*(xp(iter,k)-gp(:,k)'*u(:,k));  gp(:,k) = gp(:,k)/norm(gp(:,k))%normailize
             
@@ -115,11 +117,13 @@ for iter = 1:1000 %Number of iterations
 
 end
 
+%{
 error=0;
 for k = 101:1000
                     error = error + abs(x(k)-bc_1(k))+abs(x(k)-bc_2(k))+abs(x(k)-bc_2(k))+abs(xp(k,1)-bp_1(k))+abs(xp(k,2)-bp_2(k));
             end
 4*900-error
+%}
 
 %{
 x(9991:10000)
