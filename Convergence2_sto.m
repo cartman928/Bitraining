@@ -1,12 +1,21 @@
+%{
+
+   0.1680 + 0.0371i
+   0.1253 - 0.4126i
+
+%}
+
 clc
 clear
 %Beamformer and Receivers for the very first iteration
 
-vc(:,1) = [1;1]/norm([1;1]);
-vp(:,1) = [1;1]/norm([1;1]);
-
-gc(:,1) = [1;1]/norm([1;1]);
-gp(:,1) = [1;1]/norm([1;1]);
+%vc(:,1) = 1;
+%vc(:,1) = [1;1]/norm([1;1]);
+%vp(:,1) = [1;1]/norm([1;1]);
+gc(:,1) = [1;1];
+gp(:,1) = [1;1];
+%gc(:,1) = [1;1]/norm([1;1]);
+%gp(:,1) = [1;1]/norm([1;1]);
 %{
 gc(:,1) = [1;1]/norm([1;1]);
 gp(:,1) = [1;1]/norm([1;1]);
@@ -20,11 +29,15 @@ H{2,1}=[0.9 0.5;0.73 0.6];
 H{2,2}=[0.69 0.73;0.69 0.91];
 %}
 
-H{1,1}=[0.5 0.8;0.8 1];
+%H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) 0.8*(randn(1,1)+1i*randn(1,1));0.8(randn(1,1)+1i*randn(1,1)) randn(1,1)+1i*randn(1,1)];
+H{1,1}=(1/sqrt(2))*[-0.9704 + 0.4012i 0.8*(1.9144 - 0.3561i);0.8*(0.4516 - 1.4800i) 0.0501 - 0.1627i];
+%H{1,1}=-0.9704 + 0.4012i;
 
+%H{1,1}=[1 0.5;0.8 1];
+%H{1,1}=0.5;
 
-sigma = 10^(-2);
-StepSize=10^(-3);
+sigma = 10^(-7);
+StepSize=10^(-4);
 
 
 %{
@@ -36,7 +49,7 @@ H{2,2}=[1 1;1 1];
 sigma = 0.001;
 %}
 
-for iter = 1:10000 %Number of iterations
+    for iter = 1:10^(5) %Number of iterations
 
         %Random Source Message
         %Common Message
@@ -65,14 +78,18 @@ for iter = 1:10000 %Number of iterations
        
         k = 1; %For user 1 and 2
             u(:,k) = [0;0];
+            %u(:,k) = 0;
             j=1;
-            u(:,k) =  H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) ) + sigma*[rand;rand];
-          
-
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k));  gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
-            %gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k));  gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
-            gp(:,k) = gp(:,k)+StepSize*u(:,k)*(xp(iter,k)-gp(:,k)'*u(:,k));  gp(:,k) = gp(:,k)/norm(gp(:,k));%normailize
-            
+            %u(:,k) =  H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) ) + sigma*[rand;rand];
+            vc(:,1) = [1;1];
+            vp(:,1) = [1;1];
+            u(:,k) =  H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) ) + sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+            %u(:,k) =  H{k,j}*( vc(:,j)*x(iter) ) + sigma*rand;
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))  
+            %gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
+     
+            gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k)) %normailize
+end       
        
             
         %{
@@ -82,26 +99,36 @@ for iter = 1:10000 %Number of iterations
         bc_2(iter)= sign ( gc(:,2)'*u(:,2) );
         bp_2(iter)= sign ( gp(:,2)'*u(:,2) );
         %}
-        
+
+%{ 
+for iter = 1:10^(5) %Number of iterations      
         %Calculate Transmitters
             k = 1; %For user 1 and 2
             u(:,k) = [0;0];
+            %u(:,k) = 0;
             j = 1;
-            u(:,k) =  H{j,k}.'*(gc(:,j)*x(iter)+gp(:,j)*xp(iter,j)) +sigma*[rand;rand];
+            %u(:,k) =  H{j,k}.'*(gc(:,j)*x(iter)+gp(:,j)*xp(iter,j)) +sigma*[rand;rand];
             
+            %gc(:,j) = [1;1];
+            
+            u(:,k) =  H{j,k}.'*(gc(:,j)*x(iter)) +sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1)];
        
      
       
             %vc(:,k) = vc(:,k)+StepSize*u(:,k)*(x(iter)-vc(:,k)'*u(:,k));
-            vc(:,k) = vc(:,k)+StepSize*u(:,k)*(x(iter)-vc(:,k)'*u(:,k));
-            vc(:,k) = vc(:,k)/norm(vc(:,k)) %normailize
-            vp(:,k) = vp(:,k)+StepSize*u(:,k)*(xp(iter,k)-vp(:,k)'*u(:,k));
-            vp(:,k) = vp(:,k)/norm(vp(:,k)) %normailize
+            vc(:,k) = vc(:,k)+StepSize*u(:,k)*conj(x(iter)-vc(:,k)'*u(:,k))
+            %vc(:,k) = vc(:,k)/norm(vc(:,k)) %normailize
+            
+            %vp(:,k) = vp(:,k)+StepSize*u(:,k)*(xp(iter,k)-vp(:,k)'*u(:,k));vp(:,k) = vp(:,k)/norm(vp(:,k)) %normailize
+            
    
  
 
 end
-        
+ 
+%}       
+
+
 %{        
 error=0;
 for k = 101:1000
