@@ -79,9 +79,9 @@ for iter = 1:100000 %Number of iterations
                 m=1;
             end
             
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k)-gc(:,m)'*u(:,m));  gc(:,k) = gc(:,k)/norm(gc(:,k))%normailize
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k)-gc(:,m)'*u(:,m));  gc(:,k) = gc(:,k)/norm(gc(:,k))%normailize
             %gc(:,k) = gc(:,k)+StepSize*u(:,k)*(x(iter)-gc(:,k)'*u(:,k));  gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
-            gp(:,k) = gp(:,k)+StepSize*u(:,k)*(xp(iter,k)-gp(:,k)'*u(:,k));  gp(:,k) = gp(:,k)/norm(gp(:,k))%normailize
+            gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k));  gp(:,k) = gp(:,k)/norm(gp(:,k))%normailize
             
         end
             
@@ -108,9 +108,9 @@ for iter = 1:100000 %Number of iterations
             end
       
             %vc(:,k) = vc(:,k)+StepSize*u(:,k)*(x(iter)-vc(:,k)'*u(:,k));
-            vc(:,k) = vc(:,k)+StepSize*u(:,k)*(x(iter)-vc(:,k)'*u(:,k)-vc(:,m)'*u(:,m));
+            vc(:,k) = vc(:,k)+StepSize*u(:,k)*conj(x(iter)-vc(:,k)'*u(:,k)-vc(:,m)'*u(:,m));
             vc(:,k) = vc(:,k)/norm(vc(:,k)); %normailize
-            vp(:,k) = vp(:,k)+StepSize*u(:,k)*(xp(iter,k)-vp(:,k)'*u(:,k));
+            vp(:,k) = vp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-vp(:,k)'*u(:,k));
             vp(:,k) = vp(:,k)/norm(vp(:,k)); %normailize
         end
  
