@@ -50,35 +50,35 @@ for iter = 1:10^(6)
 
        for k = 1:2 
 
-            sum_c1_f(:,k) = [0;0];
+            sum_c1_b(:,k) = [0;0];
             for j = 1:2
                 if j~=k
-                    sum_c1_f(:,k) = sum_c1_f(:,k) + H{k,j}*vc(:,j);
+                    sum_c1_f(:,k) = sum_c1_f(:,k) + H{j,k}.'*gc(:,j);
                 end
             end
 
-            sum_c2_f(:,k) = [0;0];
+            sum_c2_b(:,k) = [0;0];
             for j = 1:2
-                    sum_c2_f(:,k) = sum_c2_f(:,k) + H{k,j}*vc(:,j);
+                    sum_c2_f(:,k) = sum_c2_f(:,k) + H{j,k}.'*gc(:,j);
             end
 
-            sum_p1_f(:,k) = [0;0];
+            sum_p1_b(:,k) = [0;0];
             for j = 1:2
                 if j~=k
-                    sum_p1_f(:,k) = sum_p1_f(:,k) + H{k,j}*vp(:,j);
+                    sum_p1_f(:,k) = sum_p1_f(:,k) + H{j,k}.'*gp(:,j);
                 end
             end
 
             
             u(:,k) = [0;0];
             for j = 1:2
-                    u(:,k) = u(:,k) + H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) );
+                    u(:,k) = u(:,k) + H{j,k}.'*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
             end
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
                   
-            gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
-            gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
+            vc_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
+            vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
 
             gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
             gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k))
