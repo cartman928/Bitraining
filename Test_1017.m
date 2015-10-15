@@ -75,32 +75,58 @@ for iter = 1:10^(6)
                     u(:,k) = u(:,k) + H{j,k}.'*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
             end
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-
-       end
-       
-       for k = 1:2
-           
-           if k == 1
-               m=2;
-           else
-               m=1;
-           end 
-           
+     
+                  
             vc_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
             vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp(:,k) );
-            vp(:,k) = vp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-vp(:,k)'*u(:,k));
-            
+
+            vc(:,k) = vc(:,k)+StepSize*u(:,k)*conj(x(iter)-vc(:,k)'*u(:,k))
+            vp(:,k) = vp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-vp(:,k)'*u(:,k))
+
        end
-       
-       dummy(:,1) = vc(:,1);
-       vc(:,1) = vc(:,1)+StepSize*u(:,1)*conj(x(iter)-vc(:,1)'*u(:,1)-vc(:,2)'*u(:,2));
-       vc(:,2) = vc(:,2)+StepSize*u(:,2)*conj(x(iter)-vc(:,2)'*u(:,2)-dummy(:,1)'*u(:,1));
-       vc
 
 end
 
 %{
 
+vc_wiener(:,1)
+
+ans =
+
+   0.0210 - 0.2243i
+   0.2431 - 0.0885i
+
+vp_wiener(:,1)
+
+ans =
+
+  -0.0173 + 0.1862i
+   0.0264 - 0.3804i
+
+vc_wiener(:,2)
+
+ans =
+
+   0.1323 - 0.0615i
+  -0.3279 - 0.0058i
+
+vp_wiener(:,2)
+
+ans =
+
+  -0.1159 + 0.1133i
+  -0.3255 - 0.1640i
+
+vc =
+
+   0.0202 - 0.2230i   0.1333 - 0.0615i
+   0.2441 - 0.0896i  -0.3273 - 0.0058i
+
+
+vp =
+
+  -0.0182 + 0.1862i  -0.1161 + 0.1096i
+   0.0271 - 0.3801i  -0.3259 - 0.1662i
 
 
 %}
