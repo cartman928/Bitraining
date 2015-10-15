@@ -6,8 +6,6 @@ gc(:,1) = [1;1];
 gp(:,1) = [1;1];
 vc(:,1) = [1.0562 + 0.2200i,0.4991 - 0.4516i];
 vp(:,1) = [-0.7415 - 0.2519i;0.3498 + 0.8933i];
-gc(:,2) = [1;1];
-gp(:,2) = [1;1];
 vc(:,2) = [-1.3609 + 0.8642i,0.2347 - 0.0695i];
 %vc(:,2) = [0;0];
 vp(:,2) = [-0.2790 - 0.4776i;0.5612 + 0.9471i];
@@ -77,51 +75,15 @@ for iter = 1:10^(6)
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
                   
-            gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
+            gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) )    
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
 
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
-            gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k))
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k));
+            gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k));
 
        end
 
 end
 
-%{
-gc_wiener_1 =
-
-  -0.3446 - 0.1650i
-   0.2692 + 0.6259i
-
-
-gp_wiener_1 =
-
-   0.1701 + 0.2811i
-   0.1678 + 0.1554i
-
-gc_wiener(:,2)
-
-
-  -0.1469 - 0.0522i
-  -0.0879 - 0.3999i
-
-gp_wiener(:,2)
-
-
-   0.2480 + 0.3436i
-  -0.0592 - 0.1199i
-
-
-gc =
-
-  -0.3350 - 0.1582i  -0.1471 - 0.0523i
-   0.2799 + 0.6078i  -0.0884 - 0.4000i
-
-
-gp =
-
-   0.1750 + 0.2861i   0.2475 + 0.3446i
-   0.1774 + 0.1480i  -0.0592 - 0.1174i
-%}
 
 
