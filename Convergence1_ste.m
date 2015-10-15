@@ -1,8 +1,16 @@
+%{
+-0.4106 - 0.5277i
+ 0.2773 - 0.9079i
+%}
+
+
 clc
 clear
 %Beamformer for the very first iteration
-vc(:,1) = [1;1]/norm([1;1]);
-vp(:,1) = [1;1]/norm([1;1]);
+vc(:,1) = [1,1];
+vp(:,1) = [1,1];
+%vc(:,1) = [1;1]/norm([1;1]);
+%vp(:,1) = [1;1]/norm([1;1]);
 
 %{
 Channel
@@ -12,11 +20,15 @@ H{2,1}=[0.9 0.5;0.73 0.6];
 H{2,2}=[0.69 0.73;0.69 0.91];
 %}
 
-H{1,1}=[0.5 0.8;0.8 1];
+%H{1,1}=0.5;
+%H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) 0.8*(randn(1,1)+1i*randn(1,1));0.8*(randn(1,1)+1i*randn(1,1)) randn(1,1)+1i*randn(1,1)];
+H{1,1}=(1/sqrt(2))*[-0.9704 + 0.4012i 0.8*(1.9144 - 0.3561i);0.8*(0.4516 - 1.4800i) 0.0501 - 0.1627i];
+%H{1,1}=-0.9704 + 0.4012i;
 
-sigma = 10^(-2);
+sigma = 10^(-7);
 
-for iter = 1:1000 %Number of iterations
+
+    for iter = 1:1 %Number of iterations
 
         %Random Source Message
         %Common Message
@@ -38,24 +50,28 @@ for iter = 1:1000 %Number of iterations
 
             k = 1;
 
-            sum_c1_f(:,k) = [0;0];
+            sum_c1_f(:,k) = [0,0];
             
 
-            sum_c2_f(:,k) = [0;0];
+            sum_c2_f(:,k) = [0,0];
             j = 1;
             sum_c2_f(:,k) = sum_c2_f(:,k) + H{k,j}*vc(:,j);
           
 
-            sum_p1_f(:,k) = [0;0];
+            sum_p1_f(:,k) = [0,0];
             
 
 
-            gc(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );     
-            gc(:,k) = gc(:,k)/norm(gc(:,k));%normailize
-            gp(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
-            gp(:,k) = gp(:,k)/norm(gp(:,k));%normailize
+            %gc(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
+            gc(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' +eye(2)*sigma^2  ) * ( sum_c2_f(:,k) )     
+            %gc(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' +eye(2)*sigma^2  ) * ( H{k,k}*vc(:,k) )
+            %gc(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' +sigma^2  ) * ( H{k,k}*vc(:,k) )
+            %gc(:,k) = gc(:,k)/norm(gc(:,k))%normailize
+            %gp(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
+            gp(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' +eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) )
+           % gp(:,k) = gp(:,k)/norm(gp(:,k))%normailize
 
-      
+    end
         
         %{
         Decoding
@@ -64,7 +80,10 @@ for iter = 1:1000 %Number of iterations
         bc_2(iter)=sign(  gc(:,2)'*(      H{2,1}*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H{2,2}*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2)) + sigma*[rand;rand] )  );
         bp_2(iter)=sign(  gp(:,2)'*(      H{2,1}*(x(iter)*vc(:,1)+xp_1(iter)*vp(:,1))+H{2,2}*(x(iter)*vc(:,2)+xp_2(iter)*vp(:,2)) + sigma*[rand;rand] )  );
         %}
-
+    
+    %{
+    
+    for iter = 1:10 %Number of iterations
         k = 1; %For user 1 and 2
 
             sum_c1_b(:,k) = [0;0];
@@ -78,14 +97,19 @@ for iter = 1:1000 %Number of iterations
             sum_p1_b(:,k) = [0;0];
           
 
-            vc(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}.')'+eye(2)*sigma^2+H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}.')'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( sum_c2_b(:,k) );
-            vc(:,k) = vc(:,k)/norm(vc(:,k))%normailize
-            vp(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}.')'+eye(2)*sigma^2+H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}.')'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( H{k,k}.'*gp(:,k) );
-            vp(:,k) = vp(:,k)/norm(vp(:,k))%normailize
+            %vc(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+sigma^2 ) * ( H{k,k}.'*gc(:,k) )
+            vc(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+eye(2)*sigma^2 ) * ( H{k,k}.'*gc(:,k) );
+            %vc(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}.')'+eye(2)*sigma^2+H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}.')'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( sum_c2_b(:,k) );
+            %vc(:,k) = vc(:,k)/norm(vc(:,k))%normailize
+            %vp(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}.')'+sum_c1_b(:,k)*sum_c1_b(:,k)'+H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}.')'+eye(2)*sigma^2+H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}.')'+sum_p1_b(:,k)*sum_p1_b(:,k)'  ) * ( H{k,k}.'*gp(:,k) );
+            %vp(:,k) = vp(:,k)/norm(vp(:,k))%normailize
        
 
 end
 
+    
+    %}
+    
 %{
 error=0;
 for k = 101:1000
