@@ -27,9 +27,9 @@ H{1,1}=-0.9704 + 0.4012i;
 %}
 
 sigma = 10^(-3);
-StepSize = 10^(-5);
+StepSize = 10^(-4);
 
-for iter = 1:10^(1) 
+for iter = 1:2*10^(5) 
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else

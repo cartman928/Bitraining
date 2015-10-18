@@ -1,16 +1,20 @@
 clc
 clear
 
+vc(:,1)=[1.4291 - 0.6656i;0.0183 - 1.1054i];
+vc(:,2)=[0.8221 - 0.3290i;0.3581 + 0.1167i];
+vp(:,1)=[1.9629 + 0.1063i;2.0188 + 0.3712i];
+vp(:,2)=[-0.0221 - 1.3322i;-0.4321 + 1.5764i];
 
 gc(:,1) = [1;1];
 gp(:,1) = [1;1];
-vc(:,1) = [1.0562 + 0.2200i,0.4991 - 0.4516i];
-vp(:,1) = [-0.7415 - 0.2519i;0.3498 + 0.8933i];
+%vc(:,1) = [1.0562 + 0.2200i,0.4991 - 0.4516i];
+%vp(:,1) = [-0.7415 - 0.2519i;0.3498 + 0.8933i];
 gc(:,2) = [1;1];
 gp(:,2) = [1;1];
-vc(:,2) = [-1.3609 + 0.8642i,0.2347 - 0.0695i];
+%vc(:,2) = [-1.3609 + 0.8642i,0.2347 - 0.0695i];
 %vc(:,2) = [0;0];
-vp(:,2) = [-0.2790 - 0.4776i;0.5612 + 0.9471i];
+%vp(:,2) = [-0.2790 - 0.4776i;0.5612 + 0.9471i];
 %vp(:,2) = [0;0];
 H{1,1}=(1/sqrt(2))*[-0.9704 + 0.4012i (1.9144 - 0.3561i);(0.4516 - 1.4800i) 0.0501 - 0.1627i];
 H{1,2}=0.8*(1/sqrt(2))*[-0.6337 + 0.8001i (-1.1485 + 0.2689i);(0.4516 - 1.4800i) -0.6651 - 0.9268i];
@@ -27,9 +31,9 @@ H{1,1}=-0.9704 + 0.4012i;
 %}
 
 sigma = 10^(-9);
-StepSize = 10^(-5);
+StepSize = 10^(-4);
 
-for iter = 1:10^(1) 
+for iter = 1:10^(5) 
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
@@ -82,11 +86,21 @@ for iter = 1:10^(1)
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
             gp_wiener(:,k) = gp_wiener(:,k)/norm(gp_wiener(:,k));
             
-            
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
+              
+          
             gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k))
+            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
+            
+          
+       
 
        end
+       
+       %{
+       dummy(:,1) = gc(:,1);
+       gc(:,1) = gc(:,1)+StepSize*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1)-gc(:,2)'*u(:,2));
+       gc(:,2) = gc(:,2)+StepSize*u(:,2)*conj(x(iter)-gc(:,2)'*u(:,2)-dummy(:,1)'*u(:,1));
+       %}
 
 end
 
@@ -98,32 +112,22 @@ SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*vc(:,1)+gc(:,2)'*H{2,2}*vc(:,2) )^2   )/( no
 SINR_P(2)=(   norm( gp(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp(:,1)'*sigma^2*gp(:,1) ) +  norm( gp(:,1)'*H{1,1}*vc(:,1)+gp(:,1)'*H{1,2}*vc(:,2)+gp(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_P(2)=(   norm( gp(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp(:,2)'*sigma^2*gp(:,2) ) +  norm( gp(:,2)'*H{2,1}*vc(:,1)+gp(:,2)'*H{2,2}*vc(:,2)+gp(:,2)'*H{2,1}*vp(:,1) )^2  );
 
-%{
-vc(:,1)=[1.4291 - 0.6656i;0.0183 - 1.1054i];
-vc(:,2)=[0.8221 - 0.3290i;0.3581 + 0.1167i];
-vp(:,1)=[1.9629 + 0.1063i;2.0188 + 0.3712i];
-vp(:,2)=[-0.0221 - 1.3322i;-0.4321 + 1.5764i];
-%}
 
 
-vc(:,1)=vc(:,1)/norm(vc(:,1));
-vc(:,2)=vc(:,2)/norm(vc(:,2));
-vp(:,1)=vp(:,1)/norm(vp(:,1));
-vp(:,2)=vp(:,2)/norm(vp(:,2));
 
 
 
 SINR_C_wiener(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp(:,1)+gc_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_C_wiener(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp(:,1)+gc_wiener(:,2)'*H{2,2}*vp(:,2) )^2  );
 
-SINR_P_wiener(2)=(   norm( gp_wiener(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_P_wiener(1)=(   norm( gp_wiener(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_P_wiener(2)=(   norm( gp_wiener(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp_wiener(:,2)'*sigma^2*gp_wiener(:,2) ) +  norm( gp_wiener(:,2)'*H{2,1}*vc(:,1)+gp_wiener(:,2)'*H{2,2}*vc(:,2)+gp_wiener(:,2)'*H{2,1}*vp(:,1) )^2  );
 
 
 C=0;
 for i = 1:2
     
-    C=log2(1+SINR_C_wiener(i))+log2(1+SINR_P_wiener(i))
+    C=C+log2(1+SINR_C(i))+log2(1+SINR_P(i))
     
 end
 %{
