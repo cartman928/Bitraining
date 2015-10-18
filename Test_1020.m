@@ -2,8 +2,8 @@ clc
 clear
 
 
-gc(:,1) = [1;1];
-gp(:,1) = [1;1];
+gc(:,1,1) = [1;1];
+gp(:,1,1) = [1;1];
 vc(:,1) = [1.0562 + 0.2200i,0.4991 - 0.4516i];
 vp(:,1) = [-0.7415 - 0.2519i;0.3498 + 0.8933i];
 gc(:,2) = [1;1];
@@ -26,10 +26,10 @@ vp(:,1) = 1;
 H{1,1}=-0.9704 + 0.4012i;
 %}
 
-sigma = 10^(-3);
-StepSize = 10^(-5);
+sigma = 10^(-1);
+StepSize = 10^(-4);
 
-for iter = 1:10^(1) 
+for iter = 1:10^(5) 
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
@@ -70,23 +70,31 @@ for iter = 1:10^(1)
             end
 
             
-            u(:,k) = [0;0];
+            u(:,k,iter) = [0;0];
             for j = 1:2
-                    u(:,k) = u(:,k) + H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) );
+                    u(:,k,iter) = u(:,k,iter) + H{k,j}*( vc(:,j)*x(iter)+vp(:,j)*xp(iter,j) );
             end
-            u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+            u(:,k,iter) = u(:,k,iter)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
                   
             gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
 
-            gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
-            gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k))
-
+            d_c_estimate(k)=0;
+            d_p_estimate(k)=0;
+            for n = 1:iter
+            d_c_estimate(k) = d_c_estimate(k) + gc(:,k,iter)'*u(:,k,iter-n+1);
+            d_p_estimate(k) = d_p_estimate(k) + gp(:,k,iter)'*u(:,k,iter-n+1);
+            end
+            
+            for n = 1:iter
+            gc(:,k,n+1) = gc(:,k,n)+StepSize*u(:,k,iter-n+1)*conj(x(iter)-d_c_estimate(k))
+            gp(:,k,n+1) = gp(:,k,n)+StepSize*u(:,k,iter-n+1)*conj(xp(iter,k)-d_p_estimate(k));
+            end
+            
        end
-
+  
 end
-
 
 %{
 gc_wiener_1 =

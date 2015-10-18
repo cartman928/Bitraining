@@ -26,7 +26,7 @@ vp(:,1) = 1;
 H{1,1}=-0.9704 + 0.4012i;
 %}
 
-sigma = 10^(-3);
+sigma = 10^(-9);
 StepSize = 10^(-5);
 
 for iter = 1:10^(1) 
@@ -77,9 +77,12 @@ for iter = 1:10^(1)
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
                   
-            gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
+            gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );
+            gc_wiener(:,k) = gc_wiener(:,k)/norm(gc_wiener(:,k));
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
-
+            gp_wiener(:,k) = gp_wiener(:,k)/norm(gp_wiener(:,k));
+            
+            
             gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
             gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k))
 
@@ -88,6 +91,41 @@ for iter = 1:10^(1)
 end
 
 
+
+SINR_C(1)=(   norm( gc(:,1)'*H{1,1}*vc(:,1)+gc(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) ) +  norm( gc(:,1)'*H{1,1}*vp(:,1)+gc(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*vc(:,1)+gc(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) ) +  norm( gc(:,2)'*H{2,1}*vp(:,1)+gc(:,2)'*H{2,2}*vp(:,2) )^2  );
+
+SINR_P(2)=(   norm( gp(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp(:,1)'*sigma^2*gp(:,1) ) +  norm( gp(:,1)'*H{1,1}*vc(:,1)+gp(:,1)'*H{1,2}*vc(:,2)+gp(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_P(2)=(   norm( gp(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp(:,2)'*sigma^2*gp(:,2) ) +  norm( gp(:,2)'*H{2,1}*vc(:,1)+gp(:,2)'*H{2,2}*vc(:,2)+gp(:,2)'*H{2,1}*vp(:,1) )^2  );
+
+%{
+vc(:,1)=[1.4291 - 0.6656i;0.0183 - 1.1054i];
+vc(:,2)=[0.8221 - 0.3290i;0.3581 + 0.1167i];
+vp(:,1)=[1.9629 + 0.1063i;2.0188 + 0.3712i];
+vp(:,2)=[-0.0221 - 1.3322i;-0.4321 + 1.5764i];
+%}
+
+
+vc(:,1)=vc(:,1)/norm(vc(:,1));
+vc(:,2)=vc(:,2)/norm(vc(:,2));
+vp(:,1)=vp(:,1)/norm(vp(:,1));
+vp(:,2)=vp(:,2)/norm(vp(:,2));
+
+
+
+SINR_C_wiener(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp(:,1)+gc_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_C_wiener(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp(:,1)+gc_wiener(:,2)'*H{2,2}*vp(:,2) )^2  );
+
+SINR_P_wiener(2)=(   norm( gp_wiener(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_P_wiener(2)=(   norm( gp_wiener(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp_wiener(:,2)'*sigma^2*gp_wiener(:,2) ) +  norm( gp_wiener(:,2)'*H{2,1}*vc(:,1)+gp_wiener(:,2)'*H{2,2}*vc(:,2)+gp_wiener(:,2)'*H{2,1}*vp(:,1) )^2  );
+
+
+C=0;
+for i = 1:2
+    
+    C=log2(1+SINR_C_wiener(i))+log2(1+SINR_P_wiener(i))
+    
+end
 %{
 gc_wiener_1 =
 
@@ -123,6 +161,16 @@ gp =
 
    0.1750 + 0.2861i   0.2475 + 0.3446i
    0.1774 + 0.1480i  -0.0592 - 0.1174i
+
+vc_wiener =
+
+   1.4291 - 0.6656i   0.8221 - 0.3290i
+   0.0183 - 1.1054i   0.3581 + 0.1167i
+
+vp_wiener =
+
+   1.9629 + 0.1063i  -0.0221 - 1.3322i
+   2.0188 + 0.3712i  -0.4321 + 1.5764i
 %}
 
 
