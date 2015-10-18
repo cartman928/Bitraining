@@ -27,7 +27,7 @@ H{1,1}=-0.9704 + 0.4012i;
 sigma = 10^(-1);
 StepSize = 10^(-5);
 
-for iter = 1:10^(0) 
+for iter = 1:10^(6) 
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
@@ -63,15 +63,14 @@ for iter = 1:10^(0)
             end
             u(:,1) = u(:,1)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
-                  
-gc_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' + sum_c1_f(:,1)*sum_c1_f(:,1)' +sum_p1_f(:,1)*sum_p1_f(:,1)' + H{1,1}*vc(:,1)*sum_c1_f(:,1)'+sum_c1_f(:,1)*vc(:,1)'*H{1,1}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,1) )    
-gp_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' + sum_c1_f(:,1)*sum_c1_f(:,1)' +sum_p1_f(:,1)*sum_p1_f(:,1)' + H{1,1}*vc(:,1)*sum_c1_f(:,1)'+sum_c1_f(:,1)*vc(:,1)'*H{1,1}'+eye(2)*sigma^2  ) * ( H{1,1}*vp(:,1) )
 
-gc(:,1) = gc(:,1)+StepSize*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1));
-gp(:,1) = gp(:,1)+StepSize*u(:,1)*conj(xp(iter,1)-gp(:,1)'*u(:,1));
+gc(:,1) = gc(:,1)+(StepSize/norm(u(:,1))^2)*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1))
+gp(:,1) = gp(:,1)+(StepSize/norm(u(:,1))^2)*u(:,1)*conj(xp(iter,1)-gp(:,1)'*u(:,1));
 
 end
 
+gc_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' + sum_c1_f(:,1)*sum_c1_f(:,1)' +sum_p1_f(:,1)*sum_p1_f(:,1)' + H{1,1}*vc(:,1)*sum_c1_f(:,1)'+sum_c1_f(:,1)*vc(:,1)'*H{1,1}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,1) );    
+gp_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' + sum_c1_f(:,1)*sum_c1_f(:,1)' +sum_p1_f(:,1)*sum_p1_f(:,1)' + H{1,1}*vc(:,1)*sum_c1_f(:,1)'+sum_c1_f(:,1)*vc(:,1)'*H{1,1}'+eye(2)*sigma^2  ) * ( H{1,1}*vp(:,1) );
 
 
 
