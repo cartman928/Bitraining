@@ -64,8 +64,8 @@ for iter = 1:10^(6)
             u(:,1) = u(:,1)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
 
-gc(:,1) = gc(:,1)+(StepSize/norm(u(:,1))^2)*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1))
-gp(:,1) = gp(:,1)+(StepSize/norm(u(:,1))^2)*u(:,1)*conj(xp(iter,1)-gp(:,1)'*u(:,1));
+gc(:,1) = gc(:,1)+(StepSize)*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1))
+gp(:,1) = gp(:,1)+(StepSize)*u(:,1)*conj(xp(iter,1)-gp(:,1)'*u(:,1));
 
 end
 

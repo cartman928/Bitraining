@@ -20,7 +20,7 @@ H{1,1}=-0.9704 + 0.4012i;
 sigma = 10^(-1);
 StepSize = 10^(-5);
 
-for iter = 1:10^(5);
+for iter = 1:10^(6);
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
@@ -40,10 +40,9 @@ gp_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'
 u(:,1) =  H{1,1}*( vc(:,1)*x(iter)+vp(:,1)*xp_1(iter) ) + sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
 
 gc(:,1) = gc(:,1)+StepSize*u(:,1)*conj(x(iter)-gc(:,1)'*u(:,1))
-gp(:,1) = gp(:,1)+StepSize*u(:,1)*conj(xp_1(iter)-gp(:,1)'*u(:,1));
+gp(:,1) = gp(:,1)+StepSize*conj(xp_1(iter)-gp(:,1)'*u(:,1));
 
 end
 
-gc_wiener(:,1)
-gp_wiener(:,1);
+
 
