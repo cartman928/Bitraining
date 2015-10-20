@@ -33,7 +33,7 @@ H{2,2}=(1/sqrt(2))*[-0.9313 + 0.8060i (0.7313 + 0.0698i);(-0.2850 + 1.1345i) -0.
 
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-5);
+StepSize = 0.5*10^(-5);
 
        for k = 1:2 
 
@@ -66,7 +66,7 @@ StepSize = 10^(-5);
        end
 
 
-for iter = 1:10^(6) 
+for iter = 1:2*10^(6) 
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
