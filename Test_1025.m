@@ -4,7 +4,11 @@
 
 clc
 clear
+times = 100;
+C=0;
 
+for z = 1:times
+    
 vc(:,1)=[1.4291 - 0.6656i;0.0183 - 1.1054i];
 vc(:,2)=[0.8221 - 0.3290i;0.3581 + 0.1167i];
 vp(:,1)=[1.9629 + 0.1063i;2.0188 + 0.3712i];
@@ -178,5 +182,7 @@ SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*vc(:,1)+gc(:,2)'*H{2,2}*vc(:,2) )^2   )/( no
 SINR_P(1)=(   norm( gp(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp(:,1)'*sigma^2*gp(:,1) ) +  norm( gp(:,1)'*H{1,1}*vc(:,1)+gp(:,1)'*H{1,2}*vc(:,2)+gp(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_P(2)=(   norm( gp(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp(:,2)'*sigma^2*gp(:,2) ) +  norm( gp(:,2)'*H{2,1}*vc(:,1)+gp(:,2)'*H{2,2}*vc(:,2)+gp(:,2)'*H{2,1}*vp(:,1) )^2  );
 
-C=0;
-C=log2(1+SINR_C(1))+log2(1+SINR_P(1))+log2(1+SINR_C(2))+log2(1+SINR_P(2))
+
+C=C+( log2(1+SINR_C(1))+log2(1+SINR_P(1))+log2(1+SINR_C(2))+log2(1+SINR_P(2)) )/times
+
+end
