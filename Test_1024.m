@@ -1,6 +1,6 @@
 %2 user, 2X2 MIMO Channel
-%SINR(Wiener Filters for gc(:,1) gp(:,1) gc(:,2) gp(:,2),vp(:,1),vp(:,2) Stochastic Algorithm for vc(:,1)  vc(:,2))
-%calculate gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) with cooperation
+%SINR(Wiener Filters for gc(:,1) gp(:,1) gc(:,2) gp(:,2),vp(:,1),vp(:,2)
+%Stochastic Algorithm for vc(:,1)  vc(:,2)) with cooperation
 
 clc
 clear
