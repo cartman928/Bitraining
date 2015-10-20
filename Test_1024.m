@@ -1,5 +1,7 @@
 %2 user, 2X2 MIMO Channel
-%SINR(Wiener filters gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) )
+%SINR(Wiener Filters for gc(:,1) gp(:,1) gc(:,2) gp(:,2), Stochastic Algorithm for vc(:,1) vp(:,1) vc(:,2) vp(:,2))
+%calculate gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) with cooperation
+
 clc
 clear
 
@@ -30,9 +32,8 @@ H{2,1}=0.8*(1/sqrt(2))*[-0.0165 + 0.9251i (-1.0463 - 0.5763i);(-0.1497 - 1.5829i
 H{2,2}=(1/sqrt(2))*[-0.9313 + 0.8060i (0.7313 + 0.0698i);(-0.2850 + 1.1345i) -0.5113 - 0.1662i];
 
 
-
-
 sigma = sqrt(10^(-3));
+StepSize = 10^(-5);
 
        for k = 1:2 
 
@@ -57,14 +58,33 @@ sigma = sqrt(10^(-3));
      
                   
             gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );
-            gc_wiener(:,k) = gc_wiener(:,k)/norm(gc_wiener(:,k));
+            gc_wiener(:,k) = gc_wiener(:,k)/norm(gc_wiener(:,k))
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
             gp_wiener(:,k) = gp_wiener(:,k)/norm(gp_wiener(:,k));
             
 
        end
-       
-       
+
+
+for iter = 1:10^(6) 
+        if rand-0.5 >= 0
+                    x(iter) = 1;
+                else
+                    x(iter) = -1;
+        end
+
+        if rand-0.5 >= 0
+                    xp(iter,1) = 1;
+                else
+                    xp(iter,1) = -1;
+        end
+        
+        if rand-0.5 >= 0
+                    xp(iter,2) = 1;
+                else
+                    xp(iter,2) = -1;
+        end
+
        for k = 1:2 
 
             sum_c1_b(:,k) = [0;0];
@@ -86,21 +106,30 @@ sigma = sqrt(10^(-3));
                 end
             end
 
+            
+            u(:,k) = [0;0];
+            for j = 1:2
+                    u(:,k) = u(:,k) + H{j,k}.'*( gc(:,j)*x(iter)+gp_wiener(:,j)*xp(iter,j) );
+            end
+            u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+     
                   
-            vc_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
-            vc_wiener(:,k) = vc_wiener(:,k)/norm(vc_wiener(:,k));
-            vp_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp_wiener(:,k) );
-            vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
+            vc_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc_wiener(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc_wiener(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
+            vp_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc_wiener(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc_wiener(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp_wiener(:,k) );
+
+            
        end
        
-             
-SINR_C_wiener(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc_wiener(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp_wiener(:,1)+gc_wiener(:,1)'*H{1,2}*vp_wiener(:,2) )^2  );
-SINR_C_wiener(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc_wiener(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp_wiener(:,1)+gc_wiener(:,2)'*H{2,2}*vp_wiener(:,2) )^2  );
-SINR_P_wiener(1)=(   norm( gp_wiener(:,1)'*H{1,1}*vp_wiener(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc_wiener(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp_wiener(:,2) )^2  );
-SINR_P_wiener(2)=(   norm( gp_wiener(:,2)'*H{2,2}*vp_wiener(:,2) )^2   )/( norm( gp_wiener(:,2)'*sigma^2*gp_wiener(:,2) ) +  norm( gp_wiener(:,2)'*H{2,1}*vc_wiener(:,1)+gp_wiener(:,2)'*H{2,2}*vc(:,2)+gp_wiener(:,2)'*H{2,1}*vp_wiener(:,1) )^2  );
+       dummy(:,1) = vc(:,1);
+       vc(:,1) = vc(:,1)+StepSize*u(:,1)*0.5*conj(x(iter)-vc(:,1)'*u(:,1)-vc(:,2)'*u(:,2))
+       vc(:,2) = vc(:,2)+StepSize*u(:,2)*0.5*conj(x(iter)-vc(:,2)'*u(:,2)-dummy(:,1)'*u(:,1));
+
+end
+
+SINR_C(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp(:,1)+gc_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_C(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp(:,1)+gc_wiener(:,2)'*H{2,2}*vp(:,2) )^2  );
+SINR_P(1)=(   norm( gp_wiener(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp(:,2) )^2  );
+SINR_P(2)=(   norm( gp_wiener(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp_wiener(:,2)'*sigma^2*gp_wiener(:,2) ) +  norm( gp_wiener(:,2)'*H{2,1}*vc(:,1)+gp_wiener(:,2)'*H{2,2}*vc(:,2)+gp_wiener(:,2)'*H{2,1}*vp(:,1) )^2  );
 
 C=0;
-C=log2(1+SINR_C_wiener(1))+log2(1+SINR_P_wiener(1))+log2(1+SINR_C_wiener(2))+log2(1+SINR_P_wiener(2))
-    
-
-
+C=log2(1+SINR_C(1))+log2(1+SINR_P(1))+log2(1+SINR_C(2))+log2(1+SINR_P(2))

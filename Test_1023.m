@@ -1,5 +1,6 @@
 %2 user, 2X2 MIMO Channel
-%SINR(Wiener filters gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) )
+%SINR(Wiener filters gc(:,1)=[0;0] gp(:,1) gc(:,2)=[0;0] gp(:,2)  then vc(:,1)=[0;0] vp(:,1)  vc(:,2)=[0;0] vp(:,2)  )
+%Turn off common channel  
 clc
 clear
 
@@ -8,8 +9,8 @@ vc(:,2)=[0.8221 - 0.3290i;0.3581 + 0.1167i];
 vp(:,1)=[1.9629 + 0.1063i;2.0188 + 0.3712i];
 vp(:,2)=[-0.0221 - 1.3322i;-0.4321 + 1.5764i];
 
-vc(:,1)=vc(:,1)/norm(vc(:,1));
-vc(:,2)=vc(:,2)/norm(vc(:,2));
+vc(:,1)=[0;0]
+vc(:,2)=[0;0]
 vp(:,1)=vp(:,1)/norm(vp(:,1));
 vp(:,2)=vp(:,2)/norm(vp(:,2));
 
@@ -19,8 +20,8 @@ gp(:,1) = [1.1707 - 0.0211i;-0.6295 - 1.1422i];
 gc(:,2) = [1.0489 - 0.1224i;-1.7782 - 2.3879i];
 gp(:,2) = [0.1764 - 1.7156i;0.8745 + 0.4395i];
 
-gc(:,1)=gc(:,1)/norm(gc(:,1));
-gc(:,2)=gc(:,2)/norm(gc(:,2));
+gc(:,1)=[0;0]
+gc(:,2)=[0;0]
 gp(:,1)=gp(:,1)/norm(gp(:,1));
 gp(:,2)=gp(:,2)/norm(gp(:,2));
 
@@ -57,7 +58,7 @@ sigma = sqrt(10^(-3));
      
                   
             gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );
-            gc_wiener(:,k) = gc_wiener(:,k)/norm(gc_wiener(:,k));
+            gc_wiener(:,k) = [0;0]
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
             gp_wiener(:,k) = gp_wiener(:,k)/norm(gp_wiener(:,k));
             
@@ -88,19 +89,18 @@ sigma = sqrt(10^(-3));
 
                   
             vc_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
-            vc_wiener(:,k) = vc_wiener(:,k)/norm(vc_wiener(:,k));
+            vc_wiener(:,k) = [0;0]
             vp_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp_wiener(:,k) );
             vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
        end
        
              
-SINR_C_wiener(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc_wiener(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp_wiener(:,1)+gc_wiener(:,1)'*H{1,2}*vp_wiener(:,2) )^2  );
-SINR_C_wiener(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc_wiener(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp_wiener(:,1)+gc_wiener(:,2)'*H{2,2}*vp_wiener(:,2) )^2  );
+
 SINR_P_wiener(1)=(   norm( gp_wiener(:,1)'*H{1,1}*vp_wiener(:,1) )^2   )/( norm( gp_wiener(:,1)'*sigma^2*gp_wiener(:,1) ) +  norm( gp_wiener(:,1)'*H{1,1}*vc_wiener(:,1)+gp_wiener(:,1)'*H{1,2}*vc(:,2)+gp_wiener(:,1)'*H{1,2}*vp_wiener(:,2) )^2  );
 SINR_P_wiener(2)=(   norm( gp_wiener(:,2)'*H{2,2}*vp_wiener(:,2) )^2   )/( norm( gp_wiener(:,2)'*sigma^2*gp_wiener(:,2) ) +  norm( gp_wiener(:,2)'*H{2,1}*vc_wiener(:,1)+gp_wiener(:,2)'*H{2,2}*vc(:,2)+gp_wiener(:,2)'*H{2,1}*vp_wiener(:,1) )^2  );
 
 C=0;
-C=log2(1+SINR_C_wiener(1))+log2(1+SINR_P_wiener(1))+log2(1+SINR_C_wiener(2))+log2(1+SINR_P_wiener(2))
+C=log2(1+SINR_P_wiener(1))+log2(1+SINR_P_wiener(2))
     
 
 
