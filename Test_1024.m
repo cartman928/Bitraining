@@ -119,6 +119,8 @@ for iter = 1:2*10^(6)
             vp_wiener(:,k) = inv(  H{k,k}.'*gc_wiener(:,k)*gc_wiener(:,k)'*(H{k,k}').' + H{k,k}.'*gp_wiener(:,k)*gp_wiener(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc_wiener(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc_wiener(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp_wiener(:,k) );
             vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,1));
             
+            vp(:,k) = vp(:,k)+StepSize*u(:,k)*0.5*conj(xp(iter,k)-vp(:,k)'*u(:,k));
+            
        end
        
        dummy(:,1) = vc(:,1);
@@ -127,8 +129,12 @@ for iter = 1:2*10^(6)
 
 end
 
-vc(:,1)=vc(:,1)/norm(vc(:,1));
-vc(:,2)=vc(:,2)/norm(vc(:,2));
+for k = 1:2
+    
+    vc(:,k) = vc(:,k)/norm(vc(:,k));
+    vp(:,k) = vp(:,k)/norm(vp(:,k));
+    
+end
 
 SINR_C(1)=(   norm( gc_wiener(:,1)'*H{1,1}*vc(:,1)+gc_wiener(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,1)'*sigma^2*gc_wiener(:,1) ) +  norm( gc_wiener(:,1)'*H{1,1}*vp_wiener(:,1)+gc_wiener(:,1)'*H{1,2}*vp_wiener(:,2) )^2  );
 SINR_C(2)=(   norm( gc_wiener(:,2)'*H{2,1}*vc(:,1)+gc_wiener(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc_wiener(:,2)'*sigma^2*gc_wiener(:,2) ) +  norm( gc_wiener(:,2)'*H{2,1}*vp_wiener(:,1)+gc_wiener(:,2)'*H{2,2}*vp_wiener(:,2) )^2  );

@@ -85,20 +85,21 @@ for iter = 1:length
      
                   
             gc_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );   
-            gc_wiener(:,k) = gc_wiener(:,k)/norm(gc_wiener(:,k));
             gp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
-            gp_wiener(:,k) = gp_wiener(:,k)/norm(gp_wiener(:,k));
             
             gc(:,k) = gc(:,k)+StepSize*u(:,k)*conj(x(iter)-gc(:,k)'*u(:,k))
-            gc(:,k) = gc(:,k)/norm(gc(:,k));
             gp(:,k) = gp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-gp(:,k)'*u(:,k));
-            gp(:,k) = gp(:,k)/norm(gp(:,k));
 
        end
 
 end
 
-
+for k = 1:2
+    
+    gc(:,k) = gc(:,k)/norm(gc(:,k));
+    gp(:,k) = gp(:,k)/norm(gp(:,k));
+    
+end
 
 for iter = 1:length
         if rand-0.5 >= 0
@@ -153,6 +154,8 @@ for iter = 1:length
             vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp(:,k) );
             vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
             
+            vp(:,k) = vp(:,k)+StepSize*u(:,k)*0.5*conj(xp(iter,k)-vp(:,k)'*u(:,k));
+            
            
        end
        
@@ -162,8 +165,13 @@ for iter = 1:length
 
 end
 
-vc(:,1)=vc(:,1)/norm(vc(:,1));
-vc(:,2)=vc(:,2)/norm(vc(:,2));
+for k = 1:2
+    
+    vc(:,k) = vc(:,k)/norm(vc(:,k));
+    vp(:,k) = vp(:,k)/norm(vp(:,k));
+    
+end
+
 
 SINR_C(1)=(   norm( gc(:,1)'*H{1,1}*vc(:,1)+gc(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) ) +  norm( gc(:,1)'*H{1,1}*vp(:,1)+gc(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*vc(:,1)+gc(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) ) +  norm( gc(:,2)'*H{2,1}*vp(:,1)+gc(:,2)'*H{2,2}*vp(:,2) )^2  );
