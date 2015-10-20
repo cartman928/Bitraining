@@ -1,6 +1,6 @@
 %2 user, 2X2 MIMO Channel
 %SINR(Stochastic Algorithm)
-%calculate gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) without cooperation
+%calculate gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) with cooperation
 
 clc
 clear
@@ -153,13 +153,17 @@ for iter = 1:length
             vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp(:,k) );
             vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
             
-            vc(:,k) = vc(:,k)+StepSize*u(:,k)*0.5*conj(x(iter)-vc(:,k)'*u(:,k))
-            vc(:,k) = vc(:,k)/norm(vc(:,k));
-            vp(:,k) = vp(:,k)+StepSize*u(:,k)*0.5*conj(xp(iter,k)-vp(:,k)'*u(:,k));
-            vp(:,k) = vp(:,k)/norm(vp(:,k));
+           
        end
+       
+       dummy(:,1) = vc(:,1);
+       vc(:,1) = vc(:,1)+StepSize*u(:,1)*0.5*conj(x(iter)-vc(:,1)'*u(:,1)-vc(:,2)'*u(:,2))
+       vc(:,2) = vc(:,2)+StepSize*u(:,2)*0.5*conj(x(iter)-vc(:,2)'*u(:,2)-dummy(:,1)'*u(:,1));
 
 end
+
+vc(:,1)=vc(:,1)/norm(vc(:,1));
+vc(:,2)=vc(:,2)/norm(vc(:,2));
 
 SINR_C(1)=(   norm( gc(:,1)'*H{1,1}*vc(:,1)+gc(:,2)'*H{1,2}*vc(:,2) )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) ) +  norm( gc(:,1)'*H{1,1}*vp(:,1)+gc(:,1)'*H{1,2}*vp(:,2) )^2  );
 SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*vc(:,1)+gc(:,2)'*H{2,2}*vc(:,2) )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) ) +  norm( gc(:,2)'*H{2,1}*vp(:,1)+gc(:,2)'*H{2,2}*vp(:,2) )^2  );
