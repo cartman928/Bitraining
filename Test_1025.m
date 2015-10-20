@@ -2,10 +2,14 @@
 %SINR(Stochastic Algorithm)
 %calculate gc(:,1) gp(:,1) gc(:,2) gp(:,2) then vc(:,1) vp(:,1) vc(:,2) vp(:,2) without cooperation
 
-clc
-clear
-times = 100;
-C=0;
+function [C] = Test_1025(times,sigma,StepSize,k,z)
+
+
+for length = 1:z
+    
+    length
+    
+    C(length)=0;
 
 for z = 1:times
     
@@ -36,9 +40,9 @@ H{2,1}=0.8*(1/sqrt(2))*[-0.0165 + 0.9251i (-1.0463 - 0.5763i);(-0.1497 - 1.5829i
 H{2,2}=(1/sqrt(2))*[-0.9313 + 0.8060i (0.7313 + 0.0698i);(-0.2850 + 1.1345i) -0.5113 - 0.1662i];
 
 
-sigma = sqrt(10^(-3));
-StepSize = 10^(-2);
-length = 100;
+
+
+for iteration = 1:k
 
 for iter = 1:length
         if rand-0.5 >= 0
@@ -183,6 +187,13 @@ SINR_P(1)=(   norm( gp(:,1)'*H{1,1}*vp(:,1) )^2   )/( norm( gp(:,1)'*sigma^2*gp(
 SINR_P(2)=(   norm( gp(:,2)'*H{2,2}*vp(:,2) )^2   )/( norm( gp(:,2)'*sigma^2*gp(:,2) ) +  norm( gp(:,2)'*H{2,1}*vc(:,1)+gp(:,2)'*H{2,2}*vc(:,2)+gp(:,2)'*H{2,1}*vp(:,1) )^2  );
 
 
-C=C+( log2(1+SINR_C(1))+log2(1+SINR_P(1))+log2(1+SINR_C(2))+log2(1+SINR_P(2)) )/times
+C(length)=C(length)+( log2(1+SINR_C(1))+log2(1+SINR_P(1))+log2(1+SINR_C(2))+log2(1+SINR_P(2)) )/times
+
+end
+
+end
+
+plot(C)
+
 
 end
