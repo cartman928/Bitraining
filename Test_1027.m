@@ -32,6 +32,7 @@ H{1,2}=0.8*(1/sqrt(2))*[-0.6337 + 0.8001i (-1.1485 + 0.2689i);(0.4516 - 1.4800i)
 H{2,1}=0.8*(1/sqrt(2))*[-0.0165 + 0.9251i (-1.0463 - 0.5763i);(-0.1497 - 1.5829i) -0.7804 - 0.4109i];
 H{2,2}=(1/sqrt(2))*[-0.9313 + 0.8060i (0.7313 + 0.0698i);(-0.2850 + 1.1345i) -0.5113 - 0.1662i];
 
+%{
 Z{1,1}=H{1,1}.';
 Z{1,2}=H{2,1}.';
 Z{2,1}=H{1,2}.';
@@ -41,10 +42,11 @@ Zh{1,1}=conj(H{1,1});
 Zh{1,2}=conj(H{1,2});
 Zh{2,1}=conj(H{2,1});
 Zh{2,2}=conj(H{2,2});
+%}
 
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-5);
+StepSize = 0.5*10^(-5);
 
 for iter = 1:10^(6) 
         if rand-0.5 >= 0
@@ -68,26 +70,43 @@ for iter = 1:10^(6)
        for k = 1:2 
 
            
-           
-           
-           
-           
+           sum_c1_f(:,k) = [0;0];
+            for j = 1:2
+                if j~=k
+                    sum_c1_f(:,k) = sum_c1_f(:,k) + H{k,j}*vc(:,j);
+                end
+            end
+
+            sum_c2_f(:,k) = [0;0];
+            for j = 1:2
+                    sum_c2_f(:,k) = sum_c2_f(:,k) + H{k,j}*vc(:,j);
+            end
+
+            sum_p1_f(:,k) = [0;0];
+            for j = 1:2
+                if j~=k
+                    sum_p1_f(:,k) = sum_p1_f(:,k) + H{k,j}*vp(:,j);
+                end
+            end
+
+                    
             
             u(:,k) = [0;0];
             for j = 1:2
-                    u(:,k) = u(:,k) + Z{k,j}*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
+                    u(:,k) = u(:,k) + H{k,j}*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
             end
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
   
-            %vp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
+            vp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
 
             
             %vp(:,k) = vp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-vp(:,k)'*u(:,k));
 
        end
        
-       V_wiener = inv( [Z{1,1} Z{1,2};Z{2,1} Z{2,2}]*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*[Zh{1,1} Zh{1,2};Zh{2,1} Zh{2,2}]+[Z{1,1} Z{1,2};Z{2,1} Z{2,2}]*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*[Zh{1,1} Zh{1,2};Zh{2,1} Zh{2,2}] +eye(4)*sigma^2    )*[Z{1,1} Z{1,2};Z{2,1} Z{2,2}]*[gc(:,1);gc(:,2)];
+       V_wiener = inv( [H{1,1} H{1,2};H{2,1} H{2,2}]*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*[H{1,1}' H{2,1}';H{1,2}' H{2,2}']+[H{1,1} H{1,2};H{2,1} H{2,2}]*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*[H{1,1}' H{2,1}';H{1,2} H{2,2}'] +eye(4)*sigma^2    )*[H{1,1} H{1,2};H{2,1} H{2,2}]*[gc(:,1);gc(:,2)];
+       V_wiener =sqrt(2)*(V_wiener/norm(V_wiener));
        V = V+StepSize*[u(:,1);u(:,2)]*conj(x(iter)-V'*[u(:,1);u(:,2)])
 
 end
@@ -95,10 +114,10 @@ end
 %{
 V_wiener =
 
-  -0.2198 + 0.1394i
-  -0.2687 + 0.3206i
-   0.0058 + 0.0072i
-   0.1351 + 0.0626i
+  -0.6748 + 0.1118i
+   0.4334 + 0.5477i
+  -0.2871 - 0.3679i
+  -0.2802 + 0.2517i
 
 %}
 
