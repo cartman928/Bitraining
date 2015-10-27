@@ -13,7 +13,8 @@ vc(:,1)=vc(:,1)/norm(vc(:,1));
 vc(:,2)=vc(:,2)/norm(vc(:,2));
 vp(:,1)=vp(:,1)/norm(vp(:,1));
 vp(:,2)=vp(:,2)/norm(vp(:,2));
-
+vp(:,1)=[0;0];
+vp(:,2)=[0;0];
 
 gc(:,1) = [-0.9072 + 0.2915i;-1.1637 - 0.6096i];
 gp(:,1) = [1.1707 - 0.0211i;-0.6295 - 1.1422i];
@@ -24,6 +25,9 @@ gc(:,1)=gc(:,1)/norm(gc(:,1));
 gc(:,2)=gc(:,2)/norm(gc(:,2));
 gp(:,1)=gp(:,1)/norm(gp(:,1));
 gp(:,2)=gp(:,2)/norm(gp(:,2));
+gp(:,1)=[0;0];
+gp(:,2)=[0;0];
+
 
 V = [vc(:,1);vc(:,2)];
 
@@ -46,7 +50,7 @@ Zh{2,2}=conj(H{2,2});
 
 
 sigma = sqrt(10^(-3));
-StepSize = 0.5*10^(-5);
+StepSize = 2*10^(-6);
 
 for iter = 1:10^(6) 
         if rand-0.5 >= 0
@@ -98,7 +102,7 @@ for iter = 1:10^(6)
             u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
      
   
-            vp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
+            %vp_wiener(:,k) = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( H{k,k}*vp(:,k) );
 
             
             %vp(:,k) = vp(:,k)+StepSize*u(:,k)*conj(xp(iter,k)-vp(:,k)'*u(:,k));
@@ -106,7 +110,7 @@ for iter = 1:10^(6)
        end
        
        V_wiener = inv( [H{1,1} H{1,2};H{2,1} H{2,2}]*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*[H{1,1}' H{2,1}';H{1,2}' H{2,2}']+[H{1,1} H{1,2};H{2,1} H{2,2}]*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*[H{1,1}' H{2,1}';H{1,2} H{2,2}'] +eye(4)*sigma^2    )*[H{1,1} H{1,2};H{2,1} H{2,2}]*[gc(:,1);gc(:,2)];
-       V_wiener =sqrt(2)*(V_wiener/norm(V_wiener));
+       %V_wiener =sqrt(2)*(V_wiener/norm(V_wiener));
        V = V+StepSize*[u(:,1);u(:,2)]*conj(x(iter)-V'*[u(:,1);u(:,2)])
 
 end
@@ -114,10 +118,10 @@ end
 %{
 V_wiener =
 
-  -0.6748 + 0.1118i
-   0.4334 + 0.5477i
-  -0.2871 - 0.3679i
-  -0.2802 + 0.2517i
+  -0.0997 - 0.0113i
+  -0.0540 + 0.2831i
+  -0.0669 - 0.0119i
+   0.1457 + 0.4039i
 
 %}
 
