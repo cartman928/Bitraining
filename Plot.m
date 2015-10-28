@@ -1,5 +1,5 @@
 %function [C] = Test_1026(times,sigma,StepSize,k,z)
-z=2*10^(2);Realization=2;StepSize=2*10^(-3);
+z=4*10^(2);Realization=2;StepSize=2*10^(-3);
 
 %{
 [C1] = Test_1026(Realization,sqrt(10^(-3)),StepSize,1,z)
@@ -12,7 +12,8 @@ z=2*10^(2);Realization=2;StepSize=2*10^(-3);
 [C8] = Test_1025(Realization,sqrt(10^(-3)),StepSize,8,z)
 %}
 %[C5] = Test_1025(Realization,sqrt(10^(-3)),StepSize,1,z)
-[C11] = Test_1029(Realization,sqrt(10^(-3)),StepSize,8,z)
+[C5] = Test_1029(Realization,sqrt(10^(-3)),StepSize,1,z)
+
 
 
 

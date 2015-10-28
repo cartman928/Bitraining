@@ -25,8 +25,7 @@ gc(:,2)=gc(:,2)/norm(gc(:,2));
 gp(:,1)=gp(:,1)/norm(gp(:,1));
 gp(:,2)=gp(:,2)/norm(gp(:,2));
 
-gp(:,1)=[0;0];
-gp(:,2)=[0;0];
+
 
 V = [vc(:,1);vc(:,2)];
 
@@ -58,7 +57,7 @@ xp(:,2) = zeros(1,10^(6));
 MSE_LMS = zeros(1,10^(6));
 MSE_Wiener = zeros(1,10^(6));
 
-V_wiener = inv( B*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*B'+B*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*B' +eye(4)*sigma^2    )*B*[gc(:,1);gc(:,2)];
+V_wiener = inv( B*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*B'+B*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*B' +eye(4)*sigma^2    )*[H{1,1} H{1,2};H{2,1} H{2,2}]*[gc(:,1);gc(:,2)];
 
 
 for iter = 1:10^(6) 

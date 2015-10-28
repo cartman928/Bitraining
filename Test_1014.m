@@ -1,4 +1,5 @@
 %1 user, 2X2 MIMO Channel
+%if gp is off, still converges
 clc
 clear
 
@@ -13,11 +14,15 @@ H{1,1}=(1/sqrt(2))*[-0.9704 + 0.4012i (1.9144 - 0.3561i);(0.4516 - 1.4800i) 0.05
 
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-5);
-x = zeros(1,10^(6));
-xp_1 = zeros(1,10^(6));
+StepSize = 10^(-4);
+x = zeros(1,2*10^(5));
+xp_1 = zeros(1,2*10^(5));
 
-for iter = 1:10^(6);
+gc_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' +eye(2)*sigma^2  ) * ( H{1,1}*vc(:,1) );    
+gp_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' +eye(2)*sigma^2  ) * ( H{1,1}*vp(:,1) );  
+
+
+for iter = 1:2*10^(5);
         if rand-0.5 >= 0
                     x(iter) = 1;
                 else
@@ -39,9 +44,6 @@ gp(:,1) = gp(:,1)+StepSize*conj(xp_1(iter)-gp(:,1)'*u(:,1));
 
 
 end
-
-gc_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' +eye(2)*sigma^2  ) * ( H{1,1}*vc(:,1) );    
-gp_wiener(:,1) = inv(  H{1,1}*vc(:,1)*vc(:,1)'*H{1,1}' + H{1,1}*vp(:,1)*vp(:,1)'*H{1,1}' +eye(2)*sigma^2  ) * ( H{1,1}*vp(:,1) );  
 
 
 
