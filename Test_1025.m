@@ -42,6 +42,73 @@ for Traning_length = 1:z
 
         for iteration = 1:k
 
+             for iter = 1:Traning_length
+                    if rand-0.5 >= 0
+                                x(iter) = 1;
+                            else
+                                x(iter) = -1;
+                    end
+
+                    if rand-0.5 >= 0
+                                xp(iter,1) = 1;
+                            else
+                                xp(iter,1) = -1;
+                    end
+
+                    if rand-0.5 >= 0
+                                xp(iter,2) = 1;
+                            else
+                                xp(iter,2) = -1;
+                    end
+
+                   for k = 1:2 
+
+                        sum_c1_b(:,k) = [0;0];
+                        for j = 1:2
+                            if j~=k
+                                sum_c1_b(:,k) = sum_c1_b(:,k) + H{j,k}.'*gc(:,j);
+                            end
+                        end
+
+                        sum_c2_b(:,k) = [0;0];
+                        for j = 1:2
+                                sum_c2_b(:,k) = sum_c2_b(:,k) + H{j,k}.'*gc(:,j);
+                        end
+
+                        sum_p1_b(:,k) = [0;0];
+                        for j = 1:2
+                            if j~=k
+                                sum_p1_b(:,k) = sum_p1_b(:,k) + H{j,k}.'*gp(:,j);
+                            end
+                        end
+
+
+                        u(:,k) = [0;0];
+                        for j = 1:2
+                                u(:,k) = u(:,k) + H{j,k}.'*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
+                        end
+                        u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+
+
+                        vc_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
+                        vc_wiener(:,k) = vc_wiener(:,k)/norm(vc_wiener(:,k));      
+                        vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp(:,k) );
+                        vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
+
+                        vc(:,k) = vc(:,k)+StepSize*u(:,k)*0.5*conj(x(iter)-vc(:,k)'*u(:,k));
+                        vp(:,k) = vp(:,k)+StepSize*u(:,k)*0.5*conj(xp(iter,k)-vp(:,k)'*u(:,k));
+
+                   end
+
+            end
+
+            for k = 1:2
+
+                %vc(:,k) = vc(:,k)/norm(vc(:,k));
+                %vp(:,k) = vp(:,k)/norm(vp(:,k));
+
+            end
+            
             for iter = 1:Traning_length
                         if rand-0.5 >= 0
                                     x(iter) = 1;
@@ -105,79 +172,12 @@ for Traning_length = 1:z
 
             for k = 1:2
 
-                gc(:,k) = gc(:,k)/norm(gc(:,k));
-                gp(:,k) = gp(:,k)/norm(gp(:,k));
+                %gc(:,k) = gc(:,k)/norm(gc(:,k));
+                %gp(:,k) = gp(:,k)/norm(gp(:,k));
 
             end
-
-
-
-            for iter = 1:Traning_length
-                    if rand-0.5 >= 0
-                                x(iter) = 1;
-                            else
-                                x(iter) = -1;
-                    end
-
-                    if rand-0.5 >= 0
-                                xp(iter,1) = 1;
-                            else
-                                xp(iter,1) = -1;
-                    end
-
-                    if rand-0.5 >= 0
-                                xp(iter,2) = 1;
-                            else
-                                xp(iter,2) = -1;
-                    end
-
-                   for k = 1:2 
-
-                        sum_c1_b(:,k) = [0;0];
-                        for j = 1:2
-                            if j~=k
-                                sum_c1_b(:,k) = sum_c1_b(:,k) + H{j,k}.'*gc(:,j);
-                            end
-                        end
-
-                        sum_c2_b(:,k) = [0;0];
-                        for j = 1:2
-                                sum_c2_b(:,k) = sum_c2_b(:,k) + H{j,k}.'*gc(:,j);
-                        end
-
-                        sum_p1_b(:,k) = [0;0];
-                        for j = 1:2
-                            if j~=k
-                                sum_p1_b(:,k) = sum_p1_b(:,k) + H{j,k}.'*gp(:,j);
-                            end
-                        end
-
-
-                        u(:,k) = [0;0];
-                        for j = 1:2
-                                u(:,k) = u(:,k) + H{j,k}.'*( gc(:,j)*x(iter)+gp(:,j)*xp(iter,j) );
-                        end
-                        u(:,k) = u(:,k)+ sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-
-
-                        vc_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( sum_c2_b(:,k) );    
-                        vc_wiener(:,k) = vc_wiener(:,k)/norm(vc_wiener(:,k));      
-                        vp_wiener(:,k) = inv(  H{k,k}.'*gc(:,k)*gc(:,k)'*(H{k,k}').' + H{k,k}.'*gp(:,k)*gp(:,k)'*(H{k,k}').' + sum_c1_b(:,k)*sum_c1_b(:,k)' +sum_p1_b(:,k)*sum_p1_b(:,k)' + H{k,k}.'*gc(:,k)*sum_c1_b(:,k)'+sum_c1_b(:,k)*gc(:,k)'*(H{k,k}').'+eye(2)*sigma^2  ) * ( H{k,k}.'*gp(:,k) );
-                        vp_wiener(:,k) = vp_wiener(:,k)/norm(vp_wiener(:,k));
-
-                        vc(:,k) = vc(:,k)+StepSize*u(:,k)*0.5*conj(x(iter)-vc(:,k)'*u(:,k));
-                        vp(:,k) = vp(:,k)+StepSize*u(:,k)*0.5*conj(xp(iter,k)-vp(:,k)'*u(:,k));
-
-                   end
-
-            end
-
-            for k = 1:2
-
-                vc(:,k) = vc(:,k)/norm(vc(:,k));
-                vp(:,k) = vp(:,k)/norm(vp(:,k));
-
-            end
+            
+           
 
             
 

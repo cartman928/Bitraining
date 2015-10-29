@@ -1,5 +1,6 @@
 %2 user, 2X2 MIMO Channel
 %calculate V,vp(:,1),vp(:,2) with cooperation
+%Turn Off Private Channel
 %calculate MSE
 clc
 clear
@@ -25,6 +26,9 @@ gc(:,1)=gc(:,1)/norm(gc(:,1));
 gc(:,2)=gc(:,2)/norm(gc(:,2));
 gp(:,1)=gp(:,1)/norm(gp(:,1));
 gp(:,2)=gp(:,2)/norm(gp(:,2));
+
+gp(:,1)=[0;0];
+gp(:,2)=[0;0];
 
 
 V = [vc(:,1);vc(:,2)];
@@ -71,7 +75,7 @@ C_Wiener_Normalized = zeros(1,10^(7));
 V_wiener = inv( Z_BIG*[gc(:,1);gc(:,2)]*[gc(:,1);gc(:,2)]'*Zh_BIG+Z_BIG*[gp(:,1)*gp(:,1)' zeros(2);zeros(2) gp(:,2)*gp(:,2)']*Zh_BIG +eye(4)*sigma^2    )*Z_BIG*[gc(:,1);gc(:,2)];
 V_wiener_N = sqrt(2)*V_wiener/norm(V_wiener);
 
-for iter = 1:10^(6) 
+for iter = 1:10^(5) 
     
     iter
     
@@ -114,24 +118,24 @@ for iter = 1:10^(6)
        MSE_LMS(iter) = (V'*[u(:,1);u(:,2)]- x(iter))'*(V'*[u(:,1);u(:,2)]- x(iter));
        MSE_Wiener(iter) = (V_wiener'*[u(:,1);u(:,2)]- x(iter))'*(V_wiener'*[u(:,1);u(:,2)]- x(iter));
        
-       MSE_LMS_Normalized(iter) = ((V'*sqrt(2)/norm(V))*[u(:,1);u(:,2)]- x(iter))'*((V'*sqrt(2)/norm(V))*[u(:,1);u(:,2)]- x(iter));
-       MSE_Wiener_Normalized(iter) = (V_wiener_N'*[u(:,1);u(:,2)]- x(iter))'*(V_wiener_N'*[u(:,1);u(:,2)]- x(iter));
+       %MSE_LMS_Normalized(iter) = ((V'*sqrt(2)/norm(V))*[u(:,1);u(:,2)]- x(iter))'*((V'*sqrt(2)/norm(V))*[u(:,1);u(:,2)]- x(iter));
+       %MSE_Wiener_Normalized(iter) = (V_wiener_N'*[u(:,1);u(:,2)]- x(iter))'*(V_wiener_N'*[u(:,1);u(:,2)]- x(iter));
       
        SINR_C(1)=(   norm( gc(:,1)'*H{1,1}*[V(1,1);V(2,1)]+gc(:,2)'*H{1,2}*[V(3,1);V(4,1)] )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
        SINR_C(2)=(   norm( gc(:,2)'*H{2,1}*[V(1,1);V(2,1)]+gc(:,2)'*H{2,2}*[V(3,1);V(4,1)] )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
        C_LMS(iter)=log2(1+SINR_C(1))+log2(1+SINR_C(2)); 
        
-       SINR_C_Normalized(1)=(   norm( gc(:,1)'*H{1,1}*[V(1,1);V(2,1)]*sqrt(2)/norm(V)+gc(:,2)'*H{1,2}*[V(3,1);V(4,1)]*sqrt(2)/norm(V) )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
-       SINR_C_Normalized(2)=(   norm( gc(:,2)'*H{2,1}*[V(1,1);V(2,1)]*sqrt(2)/norm(V)+gc(:,2)'*H{2,2}*[V(3,1);V(4,1)]*sqrt(2)/norm(V) )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
-       C_LMS_Normalized(iter)=log2(1+SINR_C_Normalized(1))+log2(1+SINR_C_Normalized(2)); 
+       %SINR_C_Normalized(1)=(   norm( gc(:,1)'*H{1,1}*[V(1,1);V(2,1)]*sqrt(2)/norm(V)+gc(:,2)'*H{1,2}*[V(3,1);V(4,1)]*sqrt(2)/norm(V) )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
+       %SINR_C_Normalized(2)=(   norm( gc(:,2)'*H{2,1}*[V(1,1);V(2,1)]*sqrt(2)/norm(V)+gc(:,2)'*H{2,2}*[V(3,1);V(4,1)]*sqrt(2)/norm(V) )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
+       %C_LMS_Normalized(iter)=log2(1+SINR_C_Normalized(1))+log2(1+SINR_C_Normalized(2)); 
 
        SINR_C_Wiener(1)=(   norm( gc(:,1)'*H{1,1}*[V_wiener(1,1);V_wiener(2,1)]+gc(:,2)'*H{1,2}*[V_wiener(3,1);V_wiener(4,1)] )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
        SINR_C_Wiener(2)=(   norm( gc(:,2)'*H{2,1}*[V_wiener(1,1);V_wiener(2,1)]+gc(:,2)'*H{2,2}*[V_wiener(3,1);V_wiener(4,1)] )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
        C_Wiener(iter)=log2(1+SINR_C_Wiener(1))+log2(1+SINR_C_Wiener(2));
        
-       SINR_C_Wiener_Normalized(1)=(   norm( gc(:,1)'*H{1,1}*[V_wiener_N(1,1);V_wiener_N(2,1)]+gc(:,2)'*H{1,2}*[V_wiener_N(3,1);V_wiener_N(4,1)] )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
-       SINR_C_Wiener_Normalized(2)=(   norm( gc(:,2)'*H{2,1}*[V_wiener_N(1,1);V_wiener_N(2,1)]+gc(:,2)'*H{2,2}*[V_wiener_N(3,1);V_wiener_N(4,1)] )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
-       C_Wiener_Normalized(iter)=log2(1+SINR_C_Wiener_Normalized(1))+log2(1+SINR_C_Wiener_Normalized(2));
+       %SINR_C_Wiener_Normalized(1)=(   norm( gc(:,1)'*H{1,1}*[V_wiener_N(1,1);V_wiener_N(2,1)]+gc(:,2)'*H{1,2}*[V_wiener_N(3,1);V_wiener_N(4,1)] )^2   )/( norm( gc(:,1)'*sigma^2*gc(:,1) )    );
+       %SINR_C_Wiener_Normalized(2)=(   norm( gc(:,2)'*H{2,1}*[V_wiener_N(1,1);V_wiener_N(2,1)]+gc(:,2)'*H{2,2}*[V_wiener_N(3,1);V_wiener_N(4,1)] )^2   )/( norm( gc(:,2)'*sigma^2*gc(:,2) )    );
+       %C_Wiener_Normalized(iter)=log2(1+SINR_C_Wiener_Normalized(1))+log2(1+SINR_C_Wiener_Normalized(2));
 
 end
 
@@ -147,12 +151,12 @@ xlabel('Time n')
 ylabel('MSE')
 title('1User;4X4 MIMO;Only Common Msg;M=1')
 
-subplot(2,2,2)
-plot(x,MSE_LMS_Normalized(x),x,MSE_Wiener_Normalized(x))
-legend('MSE(LMS)_Normalized','MSE(Wiener)_Normalized')
-xlabel('Time n')
-ylabel('MSE')
-title('1User;4X4 MIMO;Only Common Msg;M=1')
+%subplot(2,2,2)
+%plot(x,MSE_LMS_Normalized(x),x,MSE_Wiener_Normalized(x))
+%legend('MSE(LMS)_Normalized','MSE(Wiener)_Normalized')
+%xlabel('Time n')
+%ylabel('MSE')
+%title('1User;4X4 MIMO;Only Common Msg;M=1')
 
 subplot(2,2,3)
 plot(x,C_LMS(x),x,C_Wiener(x))
@@ -161,11 +165,11 @@ xlabel('Time n')
 ylabel('C(bit/channel)')
 title('1User;4X4 MIMO;Only Common Msg;M=1')
 
-subplot(2,2,4)
-plot(x,C_LMS_Normalized(x),x,C_Wiener_Normalized(x))
-legend('C(LMS)_Normalized','C(Wiener)_Normalized')
-xlabel('Time n')
-ylabel('C(bit/channel)')
-title('1User;4X4 MIMO;Only Common Msg;M=1')
+%subplot(2,2,4)
+%plot(x,C_LMS_Normalized(x),x,C_Wiener_Normalized(x))
+%legend('C(LMS)_Normalized','C(Wiener)_Normalized')
+%xlabel('Time n')
+%ylabel('C(bit/channel)')
+%title('1User;4X4 MIMO;Only Common Msg;M=1')
 
 

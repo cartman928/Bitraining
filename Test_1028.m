@@ -1,6 +1,6 @@
-%2 user, 2X2 MIMO Channel
+%1 user, 4X4 MIMO Channel
 %calculate V with cooperation
-%Turn off priviate channel
+%Only Common Message
 %It won't converge to wiener solution. However, if we turn on private channel, it converges.
 
 clc
