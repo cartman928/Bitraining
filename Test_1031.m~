@@ -24,15 +24,15 @@ C = zeros(1,10^(7));
 MSE_LMS = zeros(1,10^(7));
 C_LMS = zeros(1,10^(7));
 
-for TL = 1:10^(5)
+%for TL = 1:300
     
-    TL
-
+   % TL
+   
     v=1.4291 - 0.6656i;
-    v=v/norm(v);
+v=v/norm(v);
 
-    g=-0.9072 + 0.2915i;
-    g=g/norm(g);
+g=-0.9072 + 0.2915i;
+g=g/norm(g);
   
       
     %{
@@ -52,24 +52,23 @@ for TL = 1:10^(5)
     %}
     
     
-    %for i = 1:TL
+    for i = 1:TL
 
         
             if rand-0.5 >= 0
-                        xf(TL) = 1;
+                        xf(i) = 1;
                     else
-                        xf(TL) = -1;
+                        xf(i) = -1;
             end
 
-            uf = H*v*xf(TL)+(sigma^2)*(randn(1,1)+1i*randn(1,1));
-             g = g+StepSize*uf*conj( xf(TL)-g'*uf );
+            uf = H*v*xf(i)+(sigma^2)*(randn(1,1)+1i*randn(1,1));
+             g = g+StepSize*uf*conj( xf(i)-g'*uf );
 
-   % end
+    end
     
-    SINR(TL)=  norm( g'*H*v )^2/norm( g'*sigma^2*g );
-    C(TL)=log2(1+SINR(TL));
+    
       
-end
+%end
 
     x=1:TL;
  
