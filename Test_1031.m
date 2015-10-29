@@ -24,9 +24,9 @@ C = zeros(1,10^(7));
 MSE_LMS = zeros(1,10^(7));
 C_LMS = zeros(1,10^(7));
 
-for TrainingLength = 1:1000
+for TL = 1:300
     
-    TrainingLength
+    TL
     
     v=1.4291 - 0.6656i;
     v=v/norm(v);
@@ -36,7 +36,7 @@ for TrainingLength = 1:1000
     
    
     
-    for i = 1:TrainingLength
+    for i = 1:TL
 
             if rand-0.5 >= 0
                         xb(i) = 1;
@@ -51,7 +51,7 @@ for TrainingLength = 1:1000
 
     end
     
-    for i = 1:TrainingLength
+    for i = 1:TL
 
             if rand-0.5 >= 0
                         xf(i) = 1;
@@ -66,12 +66,12 @@ for TrainingLength = 1:1000
     end
     
     
-    SINR(TrainingLength)=  norm( g'*H*v )^2/norm( g'*sigma^2*g );
-    C(TrainingLength)=log2(1+SINR(TrainingLength));
+    SINR(TL)=  norm( g'*H*v )^2/norm( g'*sigma^2*g );
+    C(TL)=log2(1+SINR(TL));
       
 end
 
-    x=1:TrainingLength;
+    x=1:TL;
  
     plot(x,C(x))
     legend('C')
