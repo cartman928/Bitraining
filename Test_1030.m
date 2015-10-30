@@ -15,6 +15,9 @@ vc(:,2)=vc(:,2)/norm(vc(:,2));
 vp(:,1)=vp(:,1)/norm(vp(:,1));
 vp(:,2)=vp(:,2)/norm(vp(:,2));
 
+vp(:,1)=[0;0];
+vp(:,2)=[0;0];
+
 
 gc(:,1) = [-0.9072 + 0.2915i;-1.1637 - 0.6096i];
 gp(:,1) = [1.1707 - 0.0211i;-0.6295 - 1.1422i];
@@ -25,6 +28,9 @@ gc(:,1)=gc(:,1)/norm(gc(:,1));
 gc(:,2)=gc(:,2)/norm(gc(:,2));
 gp(:,1)=gp(:,1)/norm(gp(:,1));
 gp(:,2)=gp(:,2)/norm(gp(:,2));
+
+gp(:,1)=[0;0];
+gp(:,2)=[0;0];
 
 
 G = [gc(:,1);gc(:,2)];
@@ -38,7 +44,7 @@ B=[H{1,1} H{1,2};H{2,1} H{2,2}];
 
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-6);
+StepSize = 10^(-5);
 x = zeros(1,10^(7));
 xp(:,1) = zeros(1,10^(7));
 xp(:,2) = zeros(1,10^(7));
@@ -74,8 +80,11 @@ for iter = 1:10^(5)
            
        G = G+StepSize*[u(:,1);u(:,2)]*conj(x(iter)-G'*[u(:,1);u(:,2)]);
        
+      
+       
        MSE_LMS(iter) = (G'*[u(:,1);u(:,2)]- x(iter))'*(G'*[u(:,1);u(:,2)]- x(iter));
        MSE_Wiener(iter) = (G_Wiener'*[u(:,1);u(:,2)]- x(iter))'*(G_Wiener'*[u(:,1);u(:,2)]- x(iter));
+       
        
       
        SINR_C(1)=(   norm( [G(1,1);G(2,1)]'*H{1,1}*vc(:,1)+[G(1,1);G(2,1)]'*H{1,2}*vc(:,2) )^2   )/( norm( [G(1,1);G(2,1)]'*sigma^2*[G(1,1);G(2,1)] )    );
@@ -85,6 +94,8 @@ for iter = 1:10^(5)
        SINR_C_Wiener(1)=(   norm( [G_Wiener(1,1);G_Wiener(2,1)]'*H{1,1}*vc(:,1)+[G_Wiener(1,1);G_Wiener(2,1)]'*H{1,2}*vc(:,2) )^2   )/( norm( [G_Wiener(1,1);G_Wiener(2,1)]'*sigma^2*[G_Wiener(1,1);G_Wiener(2,1)] )    );
        SINR_C_Wiener(2)=(   norm( [G_Wiener(3,1);G_Wiener(4,1)]'*H{2,1}*vc(:,1)+[G_Wiener(3,1);G_Wiener(4,1)]'*H{2,2}*vc(:,2) )^2   )/( norm( [G_Wiener(3,1);G_Wiener(4,1)]'*sigma^2*[G_Wiener(3,1);G_Wiener(4,1)] )    );
        C_Wiener(iter)=log2(1+SINR_C_Wiener(1))+log2(1+SINR_C_Wiener(2));
+       
+       
        
 
 
@@ -108,6 +119,5 @@ legend('C(LMS)','C(Wiener)')
 xlabel('Time n')
 ylabel('C(bit/channel)')
 title('1User;4X4 MIMO;Only Common Msg;M=1')
-
 
 

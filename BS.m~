@@ -1,0 +1,62 @@
+%Beam Steering
+
+clc
+clear
+
+H=[-0.9704 + 0.4012i;1.0291 - 0.4917i];
+
+w=[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
+
+sigma = sqrt(10^(-3));
+StepSize = 10^(-3);
+
+R=H*H'+sigma^2+eye(2);
+e = eig(R);
+
+w_wiener(:,1) = inv(H*H'+sigma^2)*H;
+
+for iteration = 1:500
+
+            if rand-0.5 >= 0
+                        x(iteration) = 1;
+                    else
+                        x(iteration) = -1;
+            end
+
+            y= H*x(iteration)+sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
+            w = w+StepSize*y*conj(x(iteration)-w'*y);
+            
+            MSE(iteration) = 1-H'*w-w'*H+w'*H*H'*w+w'*(sigma^2*eye(2)*w
+  
+            SINR(iteration)= norm( gc(:,1)'*H*vc(:,1) )^2/norm( gc(:,1)'*sigma^2*gc(:,1) ); 
+            C(iteration)=log2(1+SINR(iteration)); 
+            MMSE(iteration) = real(   1-vc(:,1)'*H'* inv(H*vc(:,1)*vc(:,1)'*H'+eye(2)*sigma^2)*H*vc(:,1));
+            
+    end 
+    
+    SINR_w= norm( gc_w(:,1)'*H*vc(:,1) )^2/norm( gc_w(:,1)'*sigma^2*gc_w(:,1) ); 
+    MMSE_w = real(   1-vc(:,1)'*H'* inv(H*vc(:,1)*vc(:,1)'*H'+eye(2)*sigma^2)*H*vc(:,1));
+    
+        
+end
+   
+
+
+
+x=1:iteration-1;
+
+subplot(2,1,1)
+plot(x,MSE_LMS(x),x,MMSE(x))
+legend('MSE(LMS)','MMSE')
+xlabel('Time n')
+ylabel('MSE')
+title('Beam Steering;2 Antenna')
+
+subplot(2,1,2)
+plot(x,SINR(x))
+legend('SINR')
+xlabel('Time n')
+ylabel('SINR')
+title('Beam Steering;2 Antenna')
+
+

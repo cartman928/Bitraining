@@ -14,26 +14,19 @@ g=g/norm(g);
 H=-0.9704 + 0.4012i;
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-2);
+StepSize = 10^(-5);
 xf = zeros(1,10^(7));
 xb = zeros(1,10^(7));
 ub = zeros(1,10^(7));
 uf = zeros(1,10^(7));
-SINR = zeros(1,10^(7));
+
 C = zeros(1,10^(7));
 MSE_LMS = zeros(1,10^(7));
 C_LMS = zeros(1,10^(7));
 
 for TL = 1:10^(5)
     
-    TL
-
-    v=1.4291 - 0.6656i;
-    v=v/norm(v);
-
-    g=-0.9072 + 0.2915i;
-    g=g/norm(g);
-  
+    
       
     %{
     for i = 1:TL
@@ -54,7 +47,6 @@ for TL = 1:10^(5)
     
     %for i = 1:TL
 
-        
             if rand-0.5 >= 0
                         xf(TL) = 1;
                     else
@@ -62,11 +54,11 @@ for TL = 1:10^(5)
             end
 
             uf = H*v*xf(TL)+(sigma^2)*(randn(1,1)+1i*randn(1,1));
-             g = g+StepSize*uf*conj( xf(TL)-g'*uf );
+             g = g+StepSize*uf*conj( xf(TL)-g'*uf )
 
    % end
     
-    SINR(TL)=  norm( g'*H*v )^2/norm( g'*sigma^2*g );
+    SINR(TL)=  (norm(g'*H*v))^2/norm( g'*sigma^2*g );
     C(TL)=log2(1+SINR(TL));
       
 end
