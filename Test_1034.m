@@ -18,7 +18,7 @@ StepSize = 10^(-3);
 R=H*H'+sigma^2*eye(2);
 2/max(eig(R));
 
-
+%{
 xf = zeros(1,10^(7));
 MSE = zeros(1,10^(7));
 LS_LMS = zeros(1,10^(7));
@@ -27,19 +27,20 @@ C = zeros(1,10^(7));
 C_Wiener = zeros(1,10^(7));
 SINR = zeros(1,10^(7));
 SINR_C_Wiener= zeros(1,10^(7));
+%}
 
 
 v_w = inv(H.'*g*g'*(H.')'+eye(2)*sigma^2)*H.'*g;
 v_w = v_w/norm(v_w);
 g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
-SINR_w= norm( g_w'*H*v_w )^2/norm( g_w'*sigma^2*g_w ); 
+SINR_w= norm( g_w'*H*v_w )^2/norm( g_w'*eye(2)*sigma^2*g_w )
 
 i = 2000; %FilterLength
 
-for iteration = 1:20
+for iteration = 1:2
 
     iteration
-    %{
+    
     %Backward Training
     for iter1 = 1:i
 
@@ -56,7 +57,7 @@ for iteration = 1:20
     
    
     v=v/norm(v);
-    %}
+    
     
     
 
@@ -77,11 +78,11 @@ for iteration = 1:20
 
     
     MSE(iteration) = 1-v'*H'*g-(v'*H'*g)'+g'*eye(2)*(sigma^2)*g+(v'*H'*g)'*(v'*H'*g);
-    SINR(iteration)= norm( g'*H*v )^2/norm( g'*eye(2)*sigma^2*g ); 
+    SINR(iteration)= norm( g'*H*v )^2/norm( g'*eye(2)*sigma^2*g )
     MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
     
 
-    %g=g/norm(g);   
+    g=g/norm(g);   
         
 end
    
