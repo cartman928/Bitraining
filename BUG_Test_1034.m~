@@ -36,9 +36,10 @@ SINR_w= norm( g_w'*H*v_w )^2/norm( g_w'*sigma^2*g_w );
 
 i = 2000; %FilterLength
 
-for iteration = 1:20
+%for iteration = 1:2
 
-    iteration
+ %   iteration
+    
     %{
     %Backward Training
     for iter1 = 1:i
@@ -53,12 +54,10 @@ for iteration = 1:20
             v  = v+StepSize*yb*conj(xb(iter1)-v'*yb);
 
     end
-    
    
     v=v/norm(v);
+    
     %}
-    
-    
 
     %Forward Training  
     for iter2 = 1:i
@@ -81,12 +80,12 @@ for iteration = 1:20
     MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
     
 
-    %g=g/norm(g);   
+    g=g/norm(g);   
         
 end
    
 
-n=1:iteration;
+n=1:i;
 
 subplot(2,1,1)
 plot(n,MSE(n))

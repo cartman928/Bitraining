@@ -7,7 +7,7 @@ clear
 
 H=[-0.9704 + 0.4012i -0.4445 + 0.8804i;1.-0.7016 + 1.0288i -0.2290 - 0.3583i];
 
-v=1;
+v=[1;1];
 v=v/norm(v);
 
 g=[1;1];
@@ -40,7 +40,7 @@ SINR_w= norm( g_w'*H*v_w )^2/norm( g_w'*sigma^2*g_w );
 for i = 1:100
     i
     
-    REALIZATION = 100;
+    REALIZATION = 10;
     for R = 1:REALIZATION
 
          v=1;
