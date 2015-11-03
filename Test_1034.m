@@ -1,5 +1,5 @@
-%1 user, 2X2 MIMO Channel
-%calculate G 
+%2 user, 2X2 MIMO Channel
+%Turn Off Private Channel 
 %calculate MSE
 clc
 clear
@@ -27,12 +27,14 @@ C_Wiener = zeros(1,10^(7));
 SINR = zeros(1,10^(7));
 SINR_C_Wiener= zeros(1,10^(7));
 
+v_w = inv(H.'*g*g'*(H.')'+eye(2)*sigma^2)*H.'*g;
+v_w = v_w/norm(v_w);
+g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
 
-%g_w = inv(H*v*v'*H'+sigma^2)*H*v;
 
-i = 500; %FilterLength
+i = 200; %FilterLength
 
-for iteration = 1:20
+for iteration = 1:100
 
     iteration
     
@@ -58,12 +60,7 @@ for iteration = 1:20
     
 
 
-    %Forward Training
-    
-    %if iteration == 1
-    %g=[0;0];
-    %end
-    
+    %Forward Training  
     for iter2 = 1:i
 
             if rand-0.5 >= 0
@@ -80,10 +77,10 @@ for iteration = 1:20
  %}
     
     MSE(iteration) = 1-v'*H'*g-(v'*H'*g)'+g'*g*(sigma^2)+(v'*H'*g)'*(v'*H'*g);
-    SINR(iteration)= norm( g'*H*v/norm(v) )^2/norm( g'*sigma^2*g ); 
+    SINR(iteration)= norm( g'*H*v )^2/norm( g'*sigma^2*g ); 
     MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
     
-    %SINR_w= norm( g_w'*H*v )^2/norm( g_w'*sigma^2*g_w ); 
+    SINR_w= norm( g_w'*H*v_w )^2/norm( g_w'*sigma^2*g_w ); 
     %MMSE_w = real(  1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
     g=g/norm(g);   
         
@@ -100,10 +97,10 @@ ylabel('MSE')
 title('1 User;2X2 MIMO')
 
 subplot(2,1,2)
-plot(n,log2(1+SINR(n)))
-legend('C')
+plot(   n,log2(1+SINR(n)),n,log2(1+SINR_w)+n-n)
+legend('C(LMS)','C(Wiener)')
 xlabel('Time n')
-ylabel('SINR')
+ylabel('C')
 title('1 User;2X2 MIMO')
 
 

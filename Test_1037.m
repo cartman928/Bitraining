@@ -1,6 +1,7 @@
-%1 user, 2X2 MIMO Channel
-%calculate G 
+%2 user, 2X2 MIMO Channel
+%Turn Off Private Channel 
 %calculate MSE
+%Know Statistics
 clc
 clear
 
@@ -32,7 +33,7 @@ SINR_C_Wiener= zeros(1,10^(7));
 
 i = 500; %FilterLength
 
-for iteration = 1:20
+for iteration = 1:1000
 
     iteration
     
@@ -40,40 +41,18 @@ for iteration = 1:20
     %Backward Training
     for iter1 = 1:i
 
-            if rand-0.5 >= 0
-                        xb(iter1) = 1;
-                    else
-                        xb(iter1) = -1;
-            end
-
-            yb = H.'*g*xf(iter1)+sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)]; 
-            v  = v+StepSize*yb*conj(xb(iter1)-v'*yb);
+            v  = inv(H.'*g*g'*(H.')'+sigma^2)*H.'*g;
 
     end
-    
-    
-    
-    %Normalize Transmitters
+   
     v=v/norm(v);
     
 
 
     %Forward Training
-    
-    %if iteration == 1
-    %g=[0;0];
-    %end
-    
     for iter2 = 1:i
-
-            if rand-0.5 >= 0
-                        xf(iter2) = 1;
-                    else
-                        xf(iter2) = -1;
-            end
-
-            yf = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
-            g = g+StepSize*yf*conj(xf(iter2)-g'*yf);
+  
+            g = inv(H*v*v'*H'+sigma^2)*H*v;
                    
     end 
     
@@ -82,9 +61,7 @@ for iteration = 1:20
     MSE(iteration) = 1-v'*H'*g-(v'*H'*g)'+g'*g*(sigma^2)+(v'*H'*g)'*(v'*H'*g);
     SINR(iteration)= norm( g'*H*v/norm(v) )^2/norm( g'*sigma^2*g ); 
     MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
-    
-    %SINR_w= norm( g_w'*H*v )^2/norm( g_w'*sigma^2*g_w ); 
-    %MMSE_w = real(  1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
+ 
     g=g/norm(g);   
         
 end

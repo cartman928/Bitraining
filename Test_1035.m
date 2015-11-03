@@ -1,15 +1,17 @@
-%1 user, 2X2 MIMO Channel
-%calculate G 
+%1 user, 1X2 MIMO Channel
+%Turn Off Common Channel 
 %calculate MSE
+%Statistics are known at receivers
 clc
 clear
 
-H=[-0.9704 + 0.4012i 0.2969 + 0.2337i;1.-0.7016 + 1.0288i 2.0200 - 0.1294i];
+H=[-0.9704 + 0.4012i ;1.-0.7016 + 1.0288i];
 
-v=[0;0];
+v=1;
+v=v/norm(v);
 
-g=[1;1];
-g=g/norm(g);
+g=[0;0];
+%g=g/norm(g);
 
 sigma = sqrt(10^(-3));
 StepSize = 10^(-3);
@@ -36,7 +38,7 @@ for iteration = 1:20
 
     iteration
     
-    
+    %{
     %Backward Training
     for iter1 = 1:i
 
@@ -55,6 +57,7 @@ for iteration = 1:20
     
     %Normalize Transmitters
     v=v/norm(v);
+    %}
     
 
 
@@ -64,18 +67,18 @@ for iteration = 1:20
     %g=[0;0];
     %end
     
-    for iter2 = 1:i
+    %for iter2 = 1:i
 
             if rand-0.5 >= 0
-                        xf(iter2) = 1;
+                        xf(iteration) = 1;
                     else
-                        xf(iter2) = -1;
+                        xf(iteration) = -1;
             end
 
-            yf = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
-            g = g+StepSize*yf*conj(xf(iter2)-g'*yf);
+            yf = H*( v*xf(iteration) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
+            g = (eye(2)-StepSize*(H*H'+sigma^2*eye(2)))*g+StepSize*H;
                    
-    end 
+    %end 
     
  %}
     
@@ -85,7 +88,7 @@ for iteration = 1:20
     
     %SINR_w= norm( g_w'*H*v )^2/norm( g_w'*sigma^2*g_w ); 
     %MMSE_w = real(  1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
-    g=g/norm(g);   
+    %g=g/norm(g);   
         
 end
    
@@ -97,13 +100,13 @@ plot(n,MSE(n))
 legend('MSE(LMS)')
 xlabel('Time n')
 ylabel('MSE')
-title('1 User;2X2 MIMO')
+title('1 User;1X2 MIMO')
 
 subplot(2,1,2)
 plot(n,log2(1+SINR(n)))
 legend('C')
 xlabel('Time n')
 ylabel('SINR')
-title('1 User;2X2 MIMO')
+title('1 User;1X2 MIMO')
 
 

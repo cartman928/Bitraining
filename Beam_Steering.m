@@ -1,14 +1,15 @@
 %Beam Steering
+%Choose Starting Point to Be Zero Vector!!!!!!
 
 clc
 clear
 
 H=[-0.9704 + 0.4012i;1.0291 - 0.4917i];
 
-w=[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
+w=[0;0];
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-2);
+StepSize = 10^(-3);
 
 R=H*H'+sigma^2+eye(2);
 e = eig(R);
@@ -16,7 +17,7 @@ e = eig(R);
 w_wiener = inv(H*H'+sigma^2)*H;
 SINR_wiener = norm(w_wiener'*H)^2/norm(w_wiener'*sigma^2*w_wiener); 
 
-for iteration = 1:10^(6)
+for iteration = 1:10^(2)
     
             iteration
 
@@ -48,7 +49,7 @@ ylabel('MSE')
 title('Beam Steering;2 Antenna')
 
 subplot(2,1,2)
-plot(x,SNR(x))
+plot(x,log2(1+SNR(x)))
 legend('SINR')
 xlabel('Time n')
 ylabel('SINR')
