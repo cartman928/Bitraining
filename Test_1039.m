@@ -29,7 +29,7 @@ g2_w=g2_w/norm(g2_w);
 sigma = sqrt(10^(-3));
 StepSize = 10^(-3);
 
-R=H*H'+sigma^2*eye(2);
+R=[H{1,1} H{1,2};H{2,1} H{2,2}]*[H{1,1} H{1,2};H{2,1} H{2,2}]'+sigma^2*eye(4);
 2/max(eig(R));
 
 
@@ -41,9 +41,9 @@ C_Wiener = zeros(1,10^(7));
 SINR = zeros(1,10^(7));
 SINR_C_Wiener= zeros(1,10^(7));
 
-i = 50; %FilterLength
+i = 5; %FilterLength
 
-for iteration = 1:100
+for iteration = 1:10
 
     iteration
     
@@ -55,7 +55,7 @@ for iteration = 1:100
     gc_w(:,2)=[1;1];
     gc(:,1)=gc(:,1)/norm(gc(:,1));
     gc(:,2)=gc(:,2)/norm(gc(:,2));
-    gc_w(:,1)=gc_w(:,1)/norm(gc_w(:,1);
+    gc_w(:,1)=gc_w(:,1)/norm(gc_w(:,1));
     gc_w(:,2)=gc_w(:,2)/norm(gc_w(:,2));
     
     for loop=1:iteration
@@ -75,55 +75,111 @@ for iteration = 1:100
                             else
                                 xc_b(iter1) = -1;
                     end
-
-                    yb(:,iter1,k) = Z{k,k}*(vc(:,k)*xc_b(iter1))+
-         
                     
                        
-                        for k = 1:2
-                            
-                            neq_w(:,k) = [0;0];
-                            for j = 1:2
-                                if j~=k; j=2
-                                    neq_w(:,k) = neq_w(:,k) + H{k,j}*vc(:,j);
-                                end
-                            end
+                    for k = 1:2
 
-                            all(:,k) = [0;0];
-                            for j = 1:2
-                                    all(:,k) = all(:,k) + H{k,j}*vc(:,j);
-                            end
+                                neq(:,iter1,k) = [0;0];
+                                for j = 1:2
+                                    if j~=k; 
+                                        neq(:,iter1,k) = neq(:,iter1,k) + Z{k,j}*gc(:,j)*xc_b(iter1);
+                                    end
+                                end
+
+                                neq_w(:,iter1,k) = [0;0];
+                                for j = 1:2
+                                    if j~=k;
+                                        neq_w(:,iter1,k) = neq_w(:,iter1,k) + Z{k,j}*gc(:,j);
+                                    end
+                                end
+
+                                all_w(:,iter1,k) = [0;0];
+                                for j = 1:2
+                                        all_w(:,iter1,k) = all_w(:,iter1,k) + Z{k,j}*gc(:,j);
+                                end
+
+                    end
+                    
+                    for k = 1:2    
+                    yb(:,iter1,k) = Z{k,k}*(vc(:,k)*xc_b(iter1))...
+                                    +neq(:,iter1,k)...
+                                    +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
+                    end
                             
-                        end
-                            
-                            v1_w = inv(  H{k,k}*vc(:,k)*vc(:,k)'*H{k,k}' + H{k,k}*vp(:,k)*vp(:,k)'*H{k,k}' + sum_c1_f(:,k)*sum_c1_f(:,k)' +sum_p1_f(:,k)*sum_p1_f(:,k)' + H{k,k}*vc(:,k)*sum_c1_f(:,k)'+sum_c1_f(:,k)*vc(:,k)'*H{k,k}'+eye(2)*sigma^2  ) * ( sum_c2_f(:,k) );    
-                            v2_w = inv(H.'*g_w*g_w'*(H.')'+eye(2)*sigma^2)*H.'*g_w;
                     
             end
             
-            v1  = inv(yb1*yb1')*yb1*xc_b';
-            v1=v1/norm(v1);
-            v1_w=v1_w/norm(v1_w);
-            v2  = inv(yb2*yb2')*yb2*xc_b';
-            v2=v2/norm(v2);
-            v2_w=v2_w/norm(v2_w);
+            for k = 1:2 
+            vc_w(:,k) = inv(  Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'  + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...  
+                            + neq_w(:,iter1,k)*gc_w(:,k)'*Z{k,k}'  + Z{k,k}*gc_w(:,k)*neq_w(:,iter1,k)'...
+                            + neq_w(:,iter1,k)*gc_w(:,k)'*Z{k,k}'  + eye(2)*sigma^2  ) * all_w(:,iter1,k); 
+            end
             
+            for k = 1:2
+            vc(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xc_b';
+            end
+            
+            for k = 1:2
+            vc(:,k)=vc(:,k)/norm(vc(:,k));
+            vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
+            end
+    
+                     
 
             %Forward Training  
             for iter2 = 1:i
 
                     if rand-0.5 >= 0
-                                xf(iter2) = 1;
+                                xc_f(iter2) = 1;
                             else
-                                xf(iter2) = -1;
+                                xc_f(iter2) = -1;
                     end
 
-                    yf(:,iter2) = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
-                    g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
+                    for k = 1:2
+
+                                neq(:,iter2,k) = [0;0];
+                                for j = 1:2
+                                    if j~=k; 
+                                        neq(:,iter2,k) = neq(:,iter2,k) + H{k,j}*vc(:,j)*xc_f(iter2);
+                                    end
+                                end
+
+                                neq_w(:,iter2,k) = [0;0];
+                                for j = 1:2
+                                    if j~=k;
+                                        neq_w(:,iter1,k) = neq_w(:,iter1,k) + H{k,j}*vc(:,j);
+                                    end
+                                end
+
+                                all_w(:,iter2,k) = [0;0];
+                                for j = 1:2
+                                        all_w(:,iter1,k) = all_w(:,iter1,k) + H{k,j}*vc(:,j);
+                                end
+
+                    end
+                    
+                    for k = 1:2    
+                    yf(:,iter2,k) = H{k,k}*(gc(:,k)*xc_f(iter2))...
+                                    +neq(:,iter1,k)...
+                                    +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
+                    end
                    
             end 
     
-            g  = inv(yf*yf')*yf*xf';
+            for k = 1:2 
+            gc_w(:,k) = inv(  H{k,k}*vc_w(:,k)*vc_w(:,k)'*H{k,k}'  + neq_w(:,iter2,k)*(neq_w(:,iter2,k))'...  
+                            + neq_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'  + H{k,k}*vc_w(:,k)*neq_w(:,iter2,k)'...
+                            + neq_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'  + eye(2)*sigma^2  ) * all_w(:,iter2,k); 
+            end
+            
+            for k = 1:2
+            gc(:,k)  = inv(yf(:,:,k)*yf(:,:,k)')*yf(:,:,k)*xc_f';
+            end
+            
+            for k = 1:2
+            gc(:,k)=gc(:,k)/norm(gc(:,k));
+            gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
+            end
                    
     end
     
@@ -131,6 +187,7 @@ for iteration = 1:100
     SINR_without_stat(iteration)= norm(( g'*H*v ))^2/norm( g'*eye(2)*sigma^2*g ); 
     SINR_know_stat(iteration)= norm(( g_w'*H*v_w ))^2/norm( g_w'*eye(2)*sigma^2*g_w ); 
     MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
+    
            
 end
    
