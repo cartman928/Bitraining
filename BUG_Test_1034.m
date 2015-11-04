@@ -13,7 +13,7 @@ g=g/norm(g);
 g_w=g_w/norm(g_w);
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-4);
+StepSize = 10^(-3);
 
 R=H*H'+sigma^2*eye(2);
 2/max(eig(R));
@@ -30,7 +30,7 @@ SINR_C_Wiener= zeros(1,10^(7));
 
 i = 50; %TrainingLength
 
-for iteration = 1:200
+for iteration = 1:100
 
     iteration
     
@@ -94,15 +94,15 @@ plot(n,MSE(n))
 legend('MSE')
 xlabel('Iteration')
 ylabel('MSE')
-title('1 User;2X2 MIMO;LMS')
-axis([1 iteration 0 10])
+title('LMS;1 User;Fixed 2X2 MIMO;Pilot Length=50;\mu=10^{-3}')
+axis([1 iteration 0 3])
 
 subplot(2,1,2)
 plot(   n,log2(1+SINR_without_stat(n)),n,log2(1+SINR_know_stat(n)))
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('1 User;2X2 MIMO;LMS')
+title('LMS;1 User;Fixed 2X2 MIMO;Pilot Length=50;\mu=10^{-3}')
 axis([1 iteration 0 15])
 
 
