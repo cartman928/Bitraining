@@ -61,12 +61,13 @@ for iteration = 1:100
                     end
 
                     yb(:,iter1) = H.'*g*xb(iter1)+sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)]; 
-                    v_w = inv(H.'*g_w*g_w'*(H.')'+eye(2)*sigma^2)*H.'*g_w;
+                    
 
             end
             
             v  = inv(yb*yb')*yb*xb';
             v=v/norm(v);
+            v_w = inv(H.'*g_w*g_w'*(H.')'+eye(2)*sigma^2)*H.'*g_w;
             v_w=v_w/norm(v_w);
             
 
@@ -80,10 +81,11 @@ for iteration = 1:100
                     end
 
                     yf(:,iter2) = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
-                    g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
+                    
                    
             end 
     
+            g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
             g  = inv(yf*yf')*yf*xf';
                    
     end
