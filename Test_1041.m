@@ -2,6 +2,7 @@
 %Turn Off Private Channel 
 %calculate MSE
 %LS Filter
+%add realization function
 clc
 clear
 
@@ -15,27 +16,34 @@ Z{1,2}=H{2,1}.';
 Z{2,1}=H{1,2}.';
 Z{2,2}=H{2,2}.';
 
+for k=1:2
+SINR_without_stat(:,k)= zeros(50,1);
+SINR_know_stat(:,k)= zeros(50,1);
+end
+
 sigma = sqrt(10^(-3));
 StepSize = 10^(-3);
 
-i = 40; %FilterLength
+i = 20; %FilterLengt
+Realization=1;
 
 for iteration = 1:20
-
+    
     iteration
+
+    for R=1:Realization
+
+            gc(:,1)=[1;1];
+            gc(:,2)=[1;1];
+            gc_w(:,1)=[1;1];
+            gc_w(:,2)=[1;1];
+            gc(:,1)=gc(:,1)/norm(gc(:,1));
+            gc(:,2)=gc(:,2)/norm(gc(:,2));
+            gc_w(:,1)=gc_w(:,1)/norm(gc_w(:,1));
+            gc_w(:,2)=gc_w(:,2)/norm(gc_w(:,2));
+
+            for loop=1:iteration
     
-    gc(:,1)=[1;1];
-    gc(:,2)=[1;1];
-    gc_w(:,1)=[1;1];
-    gc_w(:,2)=[1;1];
-    gc(:,1)=gc(:,1)/norm(gc(:,1));
-    gc(:,2)=gc(:,2)/norm(gc(:,2));
-    gc_w(:,1)=gc_w(:,1)/norm(gc_w(:,1));
-    gc_w(:,2)=gc_w(:,2)/norm(gc_w(:,2));
-    
-    for loop=1:iteration
-    
-            
             for k = 1:2
             gc(:,k)=gc(:,k)/norm(gc(:,k));
             gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
@@ -151,9 +159,9 @@ for iteration = 1:20
             gc(:,k)  = inv(yf(:,:,k)*yf(:,:,k)')*yf(:,:,k)*xc_f';
             end
                       
-    end
+            end
     
-    for k = 1:2
+            for k = 1:2
         
         all_SINR(:,iteration,k) = [0;0];
         for j = 1:2
@@ -165,13 +173,14 @@ for iteration = 1:20
         all_SINR_w(:,iteration,k) = all_SINR_w(:,iteration,k) + H{k,j}*vc_w(:,j);
         end
         
-    end
+            end
     
-    for k = 1:2
-    SINR_without_stat(iteration,k)= norm(gc(:,k)'*all_SINR(:,iteration,k))^2/norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) );
-    SINR_know_stat(iteration,k)= norm(( gc_w(:,k)'*all_SINR_w(:,iteration,k)))^2/norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ); 
-    end
+            for k = 1:2
+            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+norm(gc(:,k)'*all_SINR(:,iteration,k))^2/norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )/Realization;
+            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+norm(( gc_w(:,k)'*all_SINR_w(:,iteration,k)))^2/norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) )/Realization; 
+            end
     
+    end
            
 end
    
@@ -182,7 +191,7 @@ plot(   n,log2(1+SINR_without_stat(n,1))+log2(1+SINR_without_stat(n,2)),n,log2(1
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;1 User;Fixed 2X2 MIMO;Pilot Length=50')
+title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=50')
 axis([1 iteration 0 30])
 
 

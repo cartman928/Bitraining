@@ -28,9 +28,9 @@ C_Wiener = zeros(1,10^(7));
 SINR = zeros(1,10^(7));
 SINR_C_Wiener= zeros(1,10^(7));
 
-i = 50; %FilterLength
+i = 20; %FilterLength
 
-for iteration = 1:100
+for iteration = 1:10
 
     iteration
     

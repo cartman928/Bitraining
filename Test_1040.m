@@ -110,7 +110,7 @@ for i = 1:50;
 
         all_SINR_w(:,i,k) = [0;0];
         for j = 1:2
-        all_SINR_w(:,i,k) = all_SINR(:,i,k) + H{k,j}*vc_w(:,j);
+        all_SINR_w(:,i,k) = all_SINR_w(:,i,k) + H{k,j}*vc_w(:,j);
         end
         
         end
