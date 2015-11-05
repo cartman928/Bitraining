@@ -163,15 +163,15 @@ for iteration = 1:10
     
             for k = 1:2
         
-        all_SINR(:,iteration,k) = [0;0];
-        for j = 1:2
-        all_SINR(:,iteration,k) = all_SINR(:,iteration,k) + H{k,j}*vc(:,j);
-        end
+                all_SINR(:,iteration,k) = [0;0];
+                for j = 1:2
+                all_SINR(:,iteration,k) = all_SINR(:,iteration,k) + H{k,j}*vc(:,j);
+                end
 
-        all_SINR_w(:,iteration,k) = [0;0];
-        for j = 1:2
-        all_SINR_w(:,iteration,k) = all_SINR_w(:,iteration,k) + H{k,j}*vc_w(:,j);
-        end
+                all_SINR_w(:,iteration,k) = [0;0];
+                for j = 1:2
+                all_SINR_w(:,iteration,k) = all_SINR_w(:,iteration,k) + H{k,j}*vc_w(:,j);
+                end
         
             end
     

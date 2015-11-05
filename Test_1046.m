@@ -3,51 +3,41 @@
 %calculate MSE
 %LS Filter
 %add realization function
+%Reproduce Fig.2
 clc
 clear
 
+H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
+Z{1,1}=H{1,1}.';
+Z{1,2}=H{2,1}.';
+Z{2,1}=H{1,2}.';
+Z{2,2}=H{2,2}.';
 
-for k=1:2
-SINR_without_stat(:,k)= zeros(50,1);
-SINR_know_stat(:,k)= zeros(50,1);
+for k = 1:2
+    gp(:,k)=[1;1];
+    gp_w(:,k)=[1;1];
+    gp(:,k)=gp(:,k)/norm(gp(:,k));
+    gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
 end
+
+
 
 sigma = sqrt(10^(-3));
 
-i = 100; %FilterLength
-Realization=10^0;
+i = 10; %FilterLength
 
-for iteration = 1:10^4
+for iteration = 1:10^5
     
     iteration
 
-    for R=1:Realization
-        
-        H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
-
-        for k = 1:2
-            gp(:,k)=[1;1];
-            gp_w(:,k)=[1;1];
+            for k = 1:2
             gp(:,k)=gp(:,k)/norm(gp(:,k));
             gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
-        end
-         
-
-            for loop=1:iteration
-    
-                for k = 1:2
-                gp(:,k)=gp(:,k)/norm(gp(:,k));
-                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
-                end
+            end
             
            
             %Backward Training
@@ -152,10 +142,9 @@ for iteration = 1:10^4
 
                 for k = 1:2
                 gp(:,k)  = inv(yf(:,:,k)*yf(:,:,k)')*yf(:,:,k)*xp_f(k,:)';
-                end
-                
+                end             
                       
-            end
+           
     
             for k = 1:2
         
@@ -176,11 +165,11 @@ for iteration = 1:10^4
             end
     
             for k = 1:2
-            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            SINR_without_stat(iteration,k)= norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    );
+            SINR_know_stat(iteration,k)= norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   );
             end
     
-    end
+    
            
 end
    
