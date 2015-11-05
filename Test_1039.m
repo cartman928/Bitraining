@@ -41,9 +41,9 @@ C_Wiener = zeros(1,10^(7));
 SINR = zeros(1,10^(7));
 SINR_C_Wiener= zeros(1,10^(7));
 
-i = 5; %FilterLength
+i = 50; %FilterLength
 
-for iteration = 1:10
+for iteration = 1:200
 
     iteration
     
@@ -183,10 +183,24 @@ for iteration = 1:10
                    
     end
     
-    MSE(iteration) = real(  1-v'*H'*g-(v'*H'*g)'+g'*eye(2)*(sigma^2)*g+(v'*H'*g)'*(v'*H'*g) );
-    SINR_without_stat(iteration)= norm(( g'*H*v ))^2/norm( g'*eye(2)*sigma^2*g ); 
-    SINR_know_stat(iteration)= norm(( g_w'*H*v_w ))^2/norm( g_w'*eye(2)*sigma^2*g_w ); 
-    MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
+    for k = 1:2
+        
+        all_SINR(:,iteration,k) = [0;0];
+        for j = 1:2
+        all_SINR(:,iteration,k) = all_SINR(:,iteration,k) + H{k,j}*vc(:,j);
+        end
+
+        all_SINR_w(:,iteration,k) = [0;0];
+        for j = 1:2
+        all_SINR_w(:,iteration,k) = all_SINR(:,iteration,k) + H{k,j}*vc_w(:,j);
+        end
+        
+    end
+    
+    for k = 1:2
+    SINR_without_stat(iteration,k)= norm(gc(:,k)'*all_SINR(:,iteration,k))^2/norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) );
+    SINR_know_stat(iteration,k)= norm(( gc_w(:,k)'*all_SINR_w(:,iteration,k)))^2/norm( gc_w'*eye(2)*sigma^2*gc_w ); 
+    end
     
            
 end
@@ -194,20 +208,11 @@ end
 
 n=1:iteration;
 
-subplot(2,1,1)
-plot(n,MSE(n))
-legend('MSE')
-xlabel('Iteration')
-ylabel('MSE')
-title('LS;1 User;Fixed 2X2 MIMO;Pilot Length=50;\mu=10^{-3}')
-axis([1 iteration 0 10^(-2)])
-
-subplot(2,1,2)
-plot(   n,log2(1+SINR_without_stat(n)),n,log2(1+SINR_know_stat(n)))
+plot(   n,log2(1+SINR_without_stat(n,1))+log2(1+SINR_without_stat(n,2)),n,log2(1+SINR_know_stat(n,1))+log2(1+SINR_know_stat(n,2)))
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;1 User;Fixed 2X2 MIMO;Pilot Length=50;\mu=10^{-3}')
-axis([1 iteration 0 15])
+title('LS;1 User;Fixed 2X2 MIMO;Pilot Length=50')
+axis([1 iteration 0 30])
 
 
