@@ -30,7 +30,7 @@ SINR_C_Wiener= zeros(1,10^(7));
 
 i = 20; %FilterLength
 
-for iteration = 1:10
+for iteration = 1:20
 
     iteration
     
