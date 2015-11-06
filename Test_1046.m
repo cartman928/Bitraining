@@ -28,9 +28,9 @@ end
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
+i = 10^(4); %FilterLength
 
-for iteration = 1:10^5
+for iteration = 1:2
     
     iteration
 
@@ -80,6 +80,8 @@ for iteration = 1:10^5
                     
                     
             end
+            
+            
             
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
