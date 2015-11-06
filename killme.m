@@ -28,7 +28,7 @@ C_Wiener = zeros(1,10^(7));
 SINR_know_stat = zeros(1,10^(7));
 SINR_without_stat= zeros(1,10^(7));
 
-Realization = 1000;
+Realization = 1;
 TrainingLength = 20; %TrainingLength
 
 
@@ -49,6 +49,7 @@ TrainingLength = 20; %TrainingLength
 
             for loop=1:iteration
 
+                
                     g=g/norm(g);
                     g_w=g_w/norm(g_w);
 
@@ -62,6 +63,7 @@ TrainingLength = 20; %TrainingLength
                             end
 
                             yb = H.'*g*xb(iter1)+sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)]; 
+                       
                             v  = v+StepSize*yb*conj(xb(iter1)-v'*yb);
                             v_w = inv(H.'*g_w*g_w'*(H.')'+eye(2)*sigma^2)*H.'*g_w;
 
@@ -82,6 +84,9 @@ TrainingLength = 20; %TrainingLength
                             yf = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
                             g = g+StepSize*yf*conj(xf(iter2)-g'*yf);
                             g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
+                      
+                            
+                            
 
             end 
             end
