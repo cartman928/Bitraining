@@ -16,7 +16,7 @@ end
 sigma = sqrt(10^(-3));
 
 i = 10; %FilterLength
-Realization=100;
+Realization=1000;
 
   for R=1:Realization
         
@@ -159,7 +159,7 @@ for iteration = 1:100
                     vc(:,k)=sqrt(2)*vc(:,k)/norm([vc(:,1);vc(:,2)]);
                     end
                     
-                    Vc_w=Vc_w/norm(Vc_w);
+                    Vc_w=sqrt(2)*Vc_w/norm(Vc_w);
                     for k = 1:2
                     vc_w(:,k)=Vc_w(2*k-1:2*k); 
                     end
