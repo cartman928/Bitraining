@@ -7,10 +7,10 @@ clc
 clear
 
 for k=1:2
-SINR_c_without_stat(:,k)= zeros(50,1);
-SINR_c_know_stat(:,k)= zeros(50,1);
-SINR_p_without_stat(:,k)= zeros(50,1);
-SINR_p_know_stat(:,k)= zeros(50,1);
+SINR_c_without_stat(:,k)= zeros(100,1);
+SINR_c_know_stat(:,k)= zeros(100,1);
+SINR_p_without_stat(:,k)= zeros(100,1);
+SINR_p_know_stat(:,k)= zeros(100,1);
 end
 
 sigma = sqrt(10^(-3));
@@ -46,15 +46,10 @@ Realization=1000;
             
         end
 
-for iteration = 1:10
+for iteration = 1:100
     
     iteration;
 
-  
-         
-
-            for loop=1:iteration
-    
                 %Normalized g
                 for k = 1:2
                 gp(:,k)=gp(:,k)/norm(gp(:,k));
@@ -130,9 +125,9 @@ for iteration = 1:10
                                                 +neq(:,iter1,k);
                     end
                            
-                    
-                    
             end
+                    
+            
             
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
@@ -264,7 +259,7 @@ for iteration = 1:10
                 end
                 
                       
-            end
+            
     
                 %for SINR
             for k = 1:2
