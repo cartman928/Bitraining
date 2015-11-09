@@ -9,14 +9,14 @@ clear
 
 
 for k=1:2
-SINR_without_stat(:,k)= zeros(50,1);
-SINR_know_stat(:,k)= zeros(50,1);
+SINR_without_stat(:,k)= zeros(100,1);
+SINR_know_stat(:,k)= zeros(100,1);
 end
 
 sigma = sqrt(10^(-3));
 
 i = 10; %FilterLength
-Realization=1;
+Realization=1000;
 
 
  for R=1:Realization
@@ -32,22 +32,22 @@ Realization=1;
         Z{1,2}=H{2,1}.';
         Z{2,1}=H{1,2}.';
         Z{2,2}=H{2,2}.';
-
-for iteration = 1:10
-
+        
         for k = 1:2
-            gp(:,k)=[1;1];
-            gp_w(:,k)=[1;1];
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+        gp(:,k)=[1;1];
+        gp_w(:,k)=[1;1];
+        gp(:,k)=gp(:,k)/norm(gp(:,k));
+        gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
         end
 
-            for loop=1:iteration
+
+for iteration = 1:100
+
     
-                for k = 1:2
-                gp(:,k)=gp(:,k)/norm(gp(:,k));
-                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
-                end
+            for k = 1:2
+            gp(:,k)=gp(:,k)/norm(gp(:,k));
+            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            end
             
            
             %Backward Training
@@ -77,20 +77,18 @@ for iteration = 1:10
                                         neq_p_w(:,iter1,k) = neq_p_w(:,iter1,k) + Z{k,j}*gp_w(:,j);
                                     end
                                 end
-
-                           
+                                
                     end
-                    
+
+                                  
                     for k = 1:2    
                                 yb(:,iter1,k) = Z{k,k}*(gp(:,k)*xp_b(k,iter1))...
                                                 +neq_p(:,iter1,k)...
                                                 +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
                     end
-                           
-                    
                     
             end
-            
+           
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
                                             + neq_p_w(:,iter1,k)*(neq_p_w(:,iter1,k))'...  
@@ -105,6 +103,8 @@ for iteration = 1:10
                     vp(:,k)=vp(:,k)/norm(vp(:,k));
                     vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
                     end
+                    
+           
        
 
             %Forward Training  
@@ -142,7 +142,8 @@ for iteration = 1:10
                                     +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))];
                     end
                    
-            end 
+            end
+            
     
                 for k = 1:2 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
@@ -155,7 +156,7 @@ for iteration = 1:10
                 end
                 
                       
-            end
+           
     
             for k = 1:2
         
@@ -184,6 +185,8 @@ for iteration = 1:10
     end
            
 end
+
+
    
 
 n=1:iteration;

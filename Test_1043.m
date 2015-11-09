@@ -8,10 +8,10 @@ clear
 
 
 for k=1:2
-SINR_c_without_stat(:,k)= zeros(50,1);
-SINR_c_know_stat(:,k)= zeros(50,1);
-SINR_p_without_stat(:,k)= zeros(50,1);
-SINR_p_know_stat(:,k)= zeros(50,1);
+SINR_c_without_stat(:,k)= zeros(100,1);
+SINR_c_know_stat(:,k)= zeros(100,1);
+SINR_p_without_stat(:,k)= zeros(100,1);
+SINR_p_know_stat(:,k)= zeros(100,1);
 end
 
 sigma = sqrt(10^(-3));
@@ -46,9 +46,9 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:10
+        for iteration = 1:100
    
-            for loop=1:iteration
+           
     
                 %Normalized g
                 for k = 1:2
@@ -252,7 +252,7 @@ for R=1:Realization
                 end
                 
                       
-            end
+            
     
             %for SINR
             for k = 1:2
