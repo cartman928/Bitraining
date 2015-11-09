@@ -16,7 +16,7 @@ end
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=1;
+Realization=10;
 
 
  for R=1:Realization
@@ -43,9 +43,9 @@ Realization=1;
         Z{1,3}=H{3,1}.';
         Z{2,3}=H{3,2}.';
 
-for iteration = 1:200
+for iteration = 1:100
     
-    iteration
+    iteration;
 
         for k = 1:3
             gp(:,k)=[1;1];
@@ -86,10 +86,10 @@ for iteration = 1:200
                                     end
                                 end
 
-                                neq_p_w(:,iter1,k) = [0;0];
+                                neq_p_w(:,:,k) = [0 0;0 0];
                                 for j = 1:3
                                     if j~=k;
-                                        neq_p_w(:,iter1,k) = neq_p_w(:,iter1,k) + Z{k,j}*gp_w(:,j);
+                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + Z{k,j}*gp_w(:,j)*gp_w(:,j)'*Z{k,j}';
                                     end
                                 end
 
@@ -108,7 +108,7 @@ for iteration = 1:200
             
                     for k = 1:3
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,iter1,k)*(neq_p_w(:,iter1,k))'...  
+                                            + neq_p_w(:,:,k)...  
                                             + eye(2)*sigma^2  ) * (Z{k,k}*gp_w(:,k)); 
                     end
             
@@ -142,10 +142,10 @@ for iteration = 1:200
                                     end
                                 end
 
-                                neq_p_w(:,iter2,k) = [0;0];
+                                neq_p_w(:,:,k) = [0 0;0 0];
                                 for j = 1:3
                                     if j~=k;
-                                        neq_p_w(:,iter2,k) = neq_p_w(:,iter2,k) + H{k,j}*vp_w(:,j);
+                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + H{k,j}*vp_w(:,j)*vp_w(:,j)'*H{k,j}';
                                     end
                                 end
 
@@ -161,7 +161,7 @@ for iteration = 1:200
     
                 for k = 1:3 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
-                                + neq_p_w(:,iter2,k)*(neq_p_w(:,iter2,k))'...  
+                                + neq_p_w(:,:,k)...  
                                 + eye(2)*sigma^2  ) * (H{k,k}*vp_w(:,k)); 
                 end
 
@@ -174,25 +174,25 @@ for iteration = 1:200
     
             for k = 1:3
         
-                neq_SINR_p(:,iteration,k) = [0;0];
+                neq_SINR_p(iteration,k) = 0;
                 for j = 1:3
                     if j~=k; 
-                neq_SINR_p(:,iteration,k) = neq_SINR_p(:,iteration,k) + gp(:,k)'*H{k,j}*vp(:,j);
+                neq_SINR_p(iteration,k) = neq_SINR_p(iteration,k) + norm(gp(:,k)'*H{k,j}*vp(:,j))^2;
                     end
                 end
 
-                neq_SINR_p_w(:,iteration,k) = [0;0];
+                neq_SINR_p_w(iteration,k) = 0;
                 for j = 1:3
                     if j~=k; 
-                neq_SINR_p_w(:,iteration,k) = neq_SINR_p_w(:,iteration,k) + gp_w(:,k)'*H{k,j}*vp_w(:,j);
+                neq_SINR_p_w(iteration,k) = neq_SINR_p_w(iteration,k) + norm(gp_w(:,k)'*H{k,j}*vp_w(:,j))^2;
                     end
                 end
         
             end
     
             for k = 1:3
-            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
+            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
             end
     
     end
