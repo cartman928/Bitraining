@@ -15,16 +15,13 @@ SINR_p_without_stat(:,k)= zeros(50,1);
 SINR_p_know_stat(:,k)= zeros(50,1);
 end
 
-sigma = sqrt(10^(-2));
+sigma = sqrt(10^(-3));
 
-i = 20; %FilterLength
-Realization=1000;
+i = 50; %FilterLength
+Realization=10;
 
-for iteration = 1:5
-    
-    iteration
 
-    for R=1:Realization
+for R=1:Realization
         
         R
         
@@ -41,17 +38,17 @@ for iteration = 1:5
         for k = 1:2
             gp(:,k)=[1;1];
             gp_w(:,k)=[1;1];
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
             gc(:,k)=[1;1];
             gc_w(:,k)=[1;1];
             gc(:,k)=gc(:,k)/norm(gc(:,k));
             gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
-            
-            
+            gp(:,k)=gp(:,k)/norm(gp(:,k));
+            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
         end
-         
 
+
+        for iteration = 1:50
+   
             for loop=1:iteration
     
                 %Normalized g
@@ -159,9 +156,6 @@ for iteration = 1:5
                     vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
                     vc(:,k)=vc(:,k)/norm(vc(:,k));
                     vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
-                    
-                 
-                    
                     end
        
 
@@ -187,7 +181,7 @@ for iteration = 1:5
                                 neq_p(:,iter2,k) = [0;0];
                                 for j = 1:2
                                     if j~=k; 
-                                        neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(k,iter2);
+                                        neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(j,iter2);
                                     end
                                 end
 

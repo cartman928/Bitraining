@@ -6,35 +6,21 @@
 clc
 clear
 
-
-
-for k=1:2
-SINR_without_stat(:,k)= zeros(50,1);
-SINR_know_stat(:,k)= zeros(50,1);
-end
+H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+Z{1,1}=H{1,1}.';
+Z{1,2}=H{2,1}.';
+Z{2,1}=H{1,2}.';
+Z{2,2}=H{2,2}.';
 
 sigma = sqrt(10^(-3));
-
-i = 50; %FilterLength
-Realization=5;
-
-
- for R=1:Realization
-     
-        R
-        
-        H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
+FilterLength = 200; %FilterLength
 
 for iteration = 1:10
 
+        %initialize g before new iterations
         for k = 1:2
             gp(:,k)=[1;1];
             gp_w(:,k)=[1;1];
@@ -44,6 +30,7 @@ for iteration = 1:10
 
             for loop=1:iteration
     
+                %normalize g before transmit
                 for k = 1:2
                 gp(:,k)=gp(:,k)/norm(gp(:,k));
                 gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
@@ -51,7 +38,7 @@ for iteration = 1:10
             
            
             %Backward Training
-            for iter1 = 1:i
+            for iter1 = 1:FilterLength
 
                     for k =1:2
                         if rand-0.5 >= 0
@@ -60,7 +47,7 @@ for iteration = 1:10
                                     xp_b(k,iter1) = -1;
                         end
                     end
-                    
+               
                        
                     for k = 1:2
 
@@ -108,7 +95,7 @@ for iteration = 1:10
        
 
             %Forward Training  
-            for iter2 = 1:i
+            for iter2 = 1:FilterLength
 
                     for k = 1:2
                         if rand-0.5 >= 0
@@ -122,7 +109,7 @@ for iteration = 1:10
 
                                 neq_p(:,iter2,k) = [0;0];
                                 for j = 1:2
-                                    if j~=k; 
+                                    if j~=k;                                    %%%%%%%%%%%%%%%%%%%%%%%%%%bugggggg
                                         neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(j,iter2);
                                     end
                                 end
@@ -176,11 +163,11 @@ for iteration = 1:10
             end
     
             for k = 1:2
-            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            SINR_without_stat(iteration,k)= (norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ));
+            SINR_know_stat(iteration,k)= (norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ));
             end
     
-    end
+
            
 end
    

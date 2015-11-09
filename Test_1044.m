@@ -186,7 +186,7 @@ for iteration = 1:5
                                 neq_p(:,iter2,k) = [0;0];
                                 for j = 1:2
                                     if j~=k; 
-                                        neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(k,iter2);
+                                        neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(j,iter2);
                                     end
                                 end
 

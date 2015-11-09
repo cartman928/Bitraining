@@ -44,6 +44,7 @@ for iteration = 1:10
 
             for loop=1:iteration
     
+            %Normalize g before transmit
             for k = 1:2
             gc(:,k)=gc(:,k)/norm(gc(:,k));
             gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
