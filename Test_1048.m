@@ -1,58 +1,44 @@
 %2 user, 2X2 MIMO Channel
-%All Channels(cooperation)
+%All Channels(without cooperation)
 %calculate MSE
 %LS Filter
 %add realization function
 clc
 clear
 
-for k=1:2
-SINR_c_without_stat(:,k)= zeros(50,1);
-SINR_c_know_stat(:,k)= zeros(50,1);
-SINR_p_without_stat(:,k)= zeros(50,1);
-SINR_p_know_stat(:,k)= zeros(50,1);
-end
+H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+
+Z{1,1}=H{1,1}.';
+Z{1,2}=H{2,1}.';
+Z{2,1}=H{1,2}.';
+Z{2,2}=H{2,2}.';
+
+        
+
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
-Realization=1000;
+i = 50; %FilterLength
 
-  for R=1:Realization
-        
-        R
-        
-        H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
-        Big_Z = [Z{1,1} Z{1,2};Z{2,1} Z{2,2}];
-
-        for k = 1:2
+        for iteration = 1:10
+            
+            iteration
+            
+            for k = 1:2
             gp(:,k)=[1;1];
             gp_w(:,k)=[1;1];
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
             gc(:,k)=[1;1];
             gc_w(:,k)=[1;1];
             gc(:,k)=gc(:,k)/norm(gc(:,k));
             gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
-            
-            
-        end
-
-for iteration = 1:10
-    
-    iteration;
-
-  
-         
-
+            gp(:,k)=gp(:,k)/norm(gp(:,k));
+            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            end
+   
             for loop=1:iteration
     
                 %Normalized g
@@ -62,8 +48,6 @@ for iteration = 1:10
                 gc(:,k)=gc(:,k)/norm(gc(:,k));
                 gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
                 end
-                
-                Gc_w=[gc_w(:,1);gc_w(:,2)];
             
            
             %Backward Training
@@ -107,10 +91,10 @@ for iteration = 1:10
                                     end
                                 end
 
-                                neq_w(:,iter1,k) = [0;0];
+                                neq_c_w(:,iter1,k) = [0;0];
                                 for j = 1:2
                                     if j~=k;
-                                        neq_w(:,iter1,k) = neq_w(:,iter1,k) + Z{k,j}*gc_w(:,j);
+                                        neq_c_w(:,iter1,k) = neq_c_w(:,iter1,k) + Z{k,j}*gc_w(:,j);
                                     end
                                 end
 
@@ -139,34 +123,29 @@ for iteration = 1:10
                                             + neq_p_w(:,iter1,k)*(neq_p_w(:,iter1,k))'...  
                                             + eye(2)*sigma^2 ...
                                             + Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'...
-                                            + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...
-                                            + Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))'...
-                                            + (Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))')'...
+                                            + neq_c_w(:,iter1,k)*(neq_c_w(:,iter1,k))'...
+                                            + Z{k,k}*gc_w(:,k)*(neq_c_w(:,iter1,k))'...
+                                            + neq_c_w(:,iter1,k)*gc_w(:,k)'*Z{k,k}'...
                                             ) * (Z{k,k}*gp_w(:,k)); 
                                         
-                            
-                            
+                            vc_w(:,k) = inv(  Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'  + neq_c_w(:,iter1,k)*(neq_c_w(:,iter1,k))'...  
+                                        + Z{k,k}*gc_w(:,k)*(neq_c_w(:,iter1,k))'+ neq_c_w(:,iter1,k)*gc_w(:,k)'*Z{k,k}'...
+                                        + eye(2)*sigma^2 ...
+                                        + Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'...
+                                        + neq_p_w(:,iter1,k)*(neq_p_w(:,iter1,k))'...
+                                        ) * all_w(:,iter1,k); 
                     end
-                    
-                    Vc_w = inv(  Big_Z*Gc_w*Gc_w'*Big_Z'...
-                                        +Big_Z*[gp_w(:,1)*gp_w(:,1)' 0*eye(2);0*eye(2) gp_w(:,1)*gp_w(:,1)' ]*Big_Z'...
-                                        +sigma^2*eye(4) )*(Big_Z*Gc_w);
             
                     for k = 1:2
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
-                    z = inv([yb(:,:,1);yb(:,:,2)]*[yb(:,:,1);yb(:,:,2)]')*[yb(:,:,1);yb(:,:,2)]*xc_b';
-                    vc(:,k)=z(2*k-1:2*k);
+                    vc(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xc_b';
                     end
             
                     for k = 1:2
                     vp(:,k)=vp(:,k)/norm(vp(:,k));
                     vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
-                    vc(:,k)=sqrt(2)*vc(:,k)/norm([vc(:,1);vc(:,2)]);
-                    end
-                    
-                    Vc_w=Vc_w/norm(Vc_w);
-                    for k = 1:2
-                    vc_w(:,k)=Vc_w(2*k-1:2*k); 
+                    vc(:,k)=vc(:,k)/norm(vc(:,k));
+                    vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
                     end
        
 
@@ -210,10 +189,10 @@ for iteration = 1:10
                                     end
                                 end
 
-                                neq_w(:,iter2,k) = [0;0];
+                                neq_c_w(:,iter2,k) = [0;0];
                                 for j = 1:2
                                     if j~=k;
-                                        neq_w(:,iter2,k) = neq_w(:,iter2,k) + H{k,j}*vc_w(:,j);
+                                        neq_c_w(:,iter2,k) = neq_c_w(:,iter2,k) + H{k,j}*vc_w(:,j);
                                     end
                                 end
 
@@ -239,13 +218,13 @@ for iteration = 1:10
                                 + neq_p_w(:,iter2,k)*(neq_p_w(:,iter2,k))'...  
                                 + eye(2)*sigma^2 ...
                                 + H{k,k}*vc_w(:,k)*vc_w(:,k)'*H{k,k}'...
-                                + neq_w(:,iter2,k)*(neq_w(:,iter2,k))'...
-                                + neq_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'...
-                                + H{k,k}*vc_w(:,k)*(neq_w(:,iter2,k))'...
+                                + neq_c_w(:,iter2,k)*(neq_c_w(:,iter2,k))'...
+                                + neq_c_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'...
+                                + H{k,k}*vc_w(:,k)*(neq_c_w(:,iter2,k))'...
                                 ) * (H{k,k}*vp_w(:,k));
                             
-                gc_w(:,k) = inv(  H{k,k}*vc_w(:,k)*vc_w(:,k)'*H{k,k}'  + neq_w(:,iter2,k)*(neq_w(:,iter2,k))'...  
-                            + neq_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'  + H{k,k}*vc_w(:,k)*(neq_w(:,iter2,k))'...
+                gc_w(:,k) = inv(  H{k,k}*vc_w(:,k)*vc_w(:,k)'*H{k,k}'  + neq_c_w(:,iter2,k)*(neq_c_w(:,iter2,k))'...  
+                            + neq_c_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'  + H{k,k}*vc_w(:,k)*(neq_c_w(:,iter2,k))'...
                             + eye(2)*sigma^2 ...
                             + H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
                             + neq_p_w(:,iter2,k)*(neq_p_w(:,iter2,k))'...
@@ -266,7 +245,7 @@ for iteration = 1:10
                       
             end
     
-                %for SINR
+            %for SINR
             for k = 1:2
                 
                 %%%%%%%%%%%
@@ -319,23 +298,19 @@ for iteration = 1:10
     
             for k = 1:2
             SINR_p_without_stat(iteration,k)= ...
-                      SINR_p_without_stat(iteration,k)...
                       +(    norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  neq_SINR_p(iteration,k)+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )  + norm(all_SINR_pc(:,iteration,k))^2    ))/Realization;
-            SINR_p_know_stat(iteration,k)= ...
-                      SINR_p_know_stat(iteration,k) ...
+            SINR_p_know_stat(iteration,k)=...
                       +(    norm(  gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) ) + norm(all_SINR_w_pc(:,iteration,k))^2  ))/Realization;
             
             SINR_c_without_stat(iteration,k)= ...
-                      SINR_c_without_stat(iteration,k) ...
-                      +(    norm(gc(:,k)'*all_SINR(:,iteration,k)   )^2/(  norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )  + all_SINR_cp(iteration,k)     ))/Realization;
+                      +(    norm( gc(:,k)'*all_SINR(:,iteration,k)  )^2/(  norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )  + all_SINR_cp(iteration,k)     ))/Realization;
             SINR_c_know_stat(iteration,k)= ...
-                      SINR_c_know_stat(iteration,k) ...
                       +(    norm( gc_w(:,k)'*all_SINR_w(:,iteration,k)  )^2/(  norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ) + all_SINR_w_cp(iteration,k)    ))/Realization; 
             end
     
     end
            
-end
+
    
 
 n=1:iteration;
@@ -356,7 +331,7 @@ plot(   n,  (log2(1+SINR_c_without_stat(n,1))...
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=20;coop')
+title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=20;no coop')
 axis([1 iteration 0 40])
 
 

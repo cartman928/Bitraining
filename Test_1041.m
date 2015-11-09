@@ -14,14 +14,12 @@ end
 sigma = sqrt(10^(-3));
 StepSize = 10^(-2);
 
-i = 20; %FilterLengt
-Realization=1000;
+i = 50; %FilterLengt
+Realization=1;
 
-for iteration = 1:10
+for R=1:Realization
     
-    iteration
-
-    for R=1:Realization
+            R
 
             H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
             H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
@@ -41,6 +39,12 @@ for iteration = 1:10
             gc(:,2)=gc(:,2)/norm(gc(:,2));
             gc_w(:,1)=gc_w(:,1)/norm(gc_w(:,1));
             gc_w(:,2)=gc_w(:,2)/norm(gc_w(:,2));
+
+for iteration = 1:10
+    
+    
+
+    
 
             for loop=1:iteration
     
@@ -178,7 +182,7 @@ for iteration = 1:10
     
             for k = 1:2
             SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(gc(:,k)'*all_SINR(:,iteration,k))^2/norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(( gc_w(:,k)'*all_SINR_w(:,iteration,k)))^2/norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ))/Realization; 
+            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm( gc_w(:,k)'*all_SINR_w(:,iteration,k))^2/norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ))/Realization; 
             end
     
     end
@@ -193,6 +197,6 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=50')
-axis([1 iteration 0 25])
+axis([1 iteration 0 40])
 
 

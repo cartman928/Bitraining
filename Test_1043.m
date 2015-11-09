@@ -7,7 +7,6 @@ clc
 clear
 
 
-
 for k=1:2
 SINR_c_without_stat(:,k)= zeros(50,1);
 SINR_c_know_stat(:,k)= zeros(50,1);
@@ -17,8 +16,8 @@ end
 
 sigma = sqrt(10^(-3));
 
-i = 50; %FilterLength
-Realization=10;
+i = 10; %FilterLength
+Realization=1000;
 
 
 for R=1:Realization
@@ -47,7 +46,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:50
+        for iteration = 1:10
    
             for loop=1:iteration
     
@@ -255,19 +254,21 @@ for R=1:Realization
                       
             end
     
+            %for SINR
             for k = 1:2
-        
-                neq_SINR_p(:,iteration,k) = [0;0];
+                
+                %%%%%%%%%%%
+                neq_SINR_p(iteration,k) = 0;
                 for j = 1:2
                     if j~=k; 
-                neq_SINR_p(:,iteration,k) = neq_SINR_p(:,iteration,k) + gp(:,k)'*H{k,j}*vp(:,j);
+                neq_SINR_p(iteration,k) = neq_SINR_p(iteration,k) + norm(gp(:,k)'*H{k,j}*vp(:,j))^2;
                     end
                 end
-
-                neq_SINR_p_w(:,iteration,k) = [0;0];
+                %%%%%%%%%%%
+                neq_SINR_p_w(iteration,k) = 0;
                 for j = 1:2
                     if j~=k; 
-                neq_SINR_p_w(:,iteration,k) = neq_SINR_p_w(:,iteration,k) + gp_w(:,k)'*H{k,j}*vp_w(:,j);
+                neq_SINR_p_w(iteration,k) = neq_SINR_p_w(iteration,k) + norm(gp_w(:,k)'*H{k,j}*vp_w(:,j))^2;
                     end
                 end
                 
@@ -281,14 +282,15 @@ for R=1:Realization
                 all_SINR_w(:,iteration,k) = all_SINR_w(:,iteration,k) + H{k,j}*vc_w(:,j);
                 end
                 
-                all_SINR_cp(:,iteration,k) = [0;0];
+                %%%%%%%%%%
+                all_SINR_cp(iteration,k) = 0;
                 for j = 1:2
-                all_SINR_cp(:,iteration,k) = all_SINR_cp(:,iteration,k) + gc(:,k)'*H{k,j}*vp(:,j);
+                all_SINR_cp(iteration,k) = all_SINR_cp(iteration,k) + norm(gc(:,k)'*H{k,j}*vp(:,j))^2;
                 end
-                
-                all_SINR_w_cp(:,iteration,k) = [0;0];
+                %%%%%%%%%%
+                all_SINR_w_cp(iteration,k) = 0;
                 for j = 1:2
-                all_SINR_w_cp(:,iteration,k) = all_SINR_w_cp(:,iteration,k) + gc_w(:,k)'*H{k,j}*vp_w(:,j);
+                all_SINR_w_cp(iteration,k) = all_SINR_w_cp(iteration,k) + norm(gc_w(:,k)'*H{k,j}*vp_w(:,j))^2;
                 end
                 
                 all_SINR_pc(:,iteration,k) = [0;0];
@@ -305,19 +307,20 @@ for R=1:Realization
     
             for k = 1:2
             SINR_p_without_stat(iteration,k)= ...
-                       SINR_p_without_stat(iteration,k)...
-                      +(    norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  norm(  neq_SINR_p(:,iteration,k)  )^2+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )  + norm(all_SINR_pc(:,iteration,k))^2    ))/Realization;
-            SINR_p_know_stat(iteration,k)=...
-                       SINR_p_know_stat(iteration,k)...
-                      +(    norm(  gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  norm(  neq_SINR_p_w(:,iteration,k)  )^2 + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) ) + norm(all_SINR_w_pc(:,iteration,k))^2  ))/Realization;
+                      SINR_p_without_stat(iteration,k)...
+                      +(    norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  neq_SINR_p(iteration,k)+ norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )  + norm(all_SINR_pc(:,iteration,k))^2    ))/Realization;
+            SINR_p_know_stat(iteration,k)= ...
+                      SINR_p_know_stat(iteration,k) ...
+                      +(    norm(  gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) ) + norm(all_SINR_w_pc(:,iteration,k))^2  ))/Realization;
             
             SINR_c_without_stat(iteration,k)= ...
-                       SINR_c_without_stat(iteration,k)...
-                      +(    norm(gc(:,k)'*all_SINR(:,iteration,k)   )^2/(  norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )  + norm(all_SINR_cp(:,iteration,k))^2       ))/Realization;
+                      SINR_c_without_stat(iteration,k) ...
+                      +(    norm(gc(:,k)'*all_SINR(:,iteration,k)   )^2/(  norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )  + all_SINR_cp(iteration,k)     ))/Realization;
             SINR_c_know_stat(iteration,k)= ...
-                       SINR_c_know_stat(iteration,k)...
-                      +(    norm( gc_w(:,k)'*all_SINR_w(:,iteration,k)  )^2/(  norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ) + norm(all_SINR_w_cp(:,iteration,k))^2     ))/Realization; 
+                      SINR_c_know_stat(iteration,k) ...
+                      +(    norm( gc_w(:,k)'*all_SINR_w(:,iteration,k)  )^2/(  norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ) + all_SINR_w_cp(iteration,k)    ))/Realization; 
             end
+    
     
     end
            
@@ -343,6 +346,6 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=20;no coop')
-axis([1 iteration 0 25])
+axis([1 iteration 0 40])
 
 
