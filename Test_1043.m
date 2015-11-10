@@ -16,8 +16,8 @@ end
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
-Realization=2000;
+i = 20; %FilterLength
+Realization=500;
 
 
 for R=1:Realization
@@ -46,7 +46,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:100
+        for iteration = 1:10
    
            
     
