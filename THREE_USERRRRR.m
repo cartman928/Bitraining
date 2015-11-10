@@ -15,7 +15,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-FilterLength = 20; %FilterLength
+FilterLength = 10; %FilterLength
 Realization=100;
 
 
@@ -52,7 +52,7 @@ Realization=100;
         
        
 
-for iteration = 1:100
+for iteration = 1:50
     
     iteration;
     

@@ -10,7 +10,7 @@ clear
 
 sigma = sqrt(10^(-3));
 
-for i = [4,8,16]; %FilterLength
+for i = [4,10]; %FilterLength
     
     i
 
