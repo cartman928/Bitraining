@@ -6,17 +6,20 @@
 clc
 clear
 
-function [C] = Test_1042(realization,sigma,StepSize,k,z)
 
-for k=1:2
-SINR_without_stat(:,k)= zeros(100,1);
-SINR_know_stat(:,k)= zeros(100,1);
-end
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
-Realization=300;
+for i = [2,4,8,16,32]; %FilterLength
+    
+    i
+
+for k=1:2
+SINR_without_stat(:,k,i)= zeros(100,1);
+SINR_know_stat(:,k,i)= zeros(100,1);
+end
+
+Realization=50;
 
 
  for R=1:Realization
@@ -41,7 +44,7 @@ Realization=300;
         end
 
 
-for iteration = 1:50
+for iteration = 1:100
 
     
             for k = 1:2
@@ -178,23 +181,29 @@ for iteration = 1:50
             end
     
             for k = 1:2
-            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/( neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/( neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            SINR_without_stat(iteration,k,i)= SINR_without_stat(iteration,k,i)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/( neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
+            SINR_know_stat(iteration,k,i)= SINR_know_stat(iteration,k,i)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/( neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
             end
+           
     
     end
            
-end
+ end
+ 
+ n=1:iteration;
+ plot(   n,  log2(1+SINR_without_stat(n,1,i))+log2(1+SINR_without_stat(n,2,i)) );
+ hold on
+ 
+ end
 
-   
+plot( n,log2(1+SINR_know_stat(n,1,i))+log2(1+SINR_know_stat(n,2,i)));
 
-n=1:iteration;
-
-plot(   n,  log2(1+SINR_without_stat(n,1))+log2(1+SINR_without_stat(n,2)), n,  log2(1+SINR_know_stat(n,1))+log2(1+SINR_know_stat(n,2)) )
-legend('C(Bi-Directional Training)','C(Max-SINR)')
+legend('C(Bi-Directional);2M=2','C(Bi-Directional);2M=4',...
+       'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
+       'C(Bi-Directional);2M=32','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;2 User;2X2 MIMO;Private Messages;Pilot Length 2M=20')
-axis([1 iteration 0 25])
+title('LS;2 User;2X2 MIMO;Private Messages;1000 Realization')
+axis([1 iteration 5 15])
 
 
