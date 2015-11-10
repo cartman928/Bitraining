@@ -1,13 +1,12 @@
 %2 user, 2X2 MIMO Channel
-%All Channels(without cooperation)
+%All Channels(cooperation)
 %calculate MSE
 %LS Filter
 %add realization function
 clc
 clear
 
-
-for i = [4,8,16,32]; %FilterLength
+for i = [4,8,16]; %FilterLength
 
 for k=1:2
 SINR_c_without_stat(:,k,i)= zeros(100,1);
@@ -18,10 +17,9 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=1000;
+Realization=100;
 
-
-for R=1:Realization
+  for R=1:Realization
         
         R
         
@@ -34,23 +32,24 @@ for R=1:Realization
         Z{1,2}=H{2,1}.';
         Z{2,1}=H{1,2}.';
         Z{2,2}=H{2,2}.';
+        Big_Z = [Z{1,1} Z{1,2};Z{2,1} Z{2,2}];
 
         for k = 1:2
             gp(:,k)=[1;1];
             gp_w(:,k)=[1;1];
+            gp(:,k)=gp(:,k)/norm(gp(:,k));
+            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
             gc(:,k)=[1;1];
             gc_w(:,k)=[1;1];
             gc(:,k)=gc(:,k)/norm(gc(:,k));
             gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            
+            
         end
 
-
-        for iteration = 1:10
-   
-           
+for iteration = 1:10
     
+
                 %Normalized g
                 for k = 1:2
                 gp(:,k)=gp(:,k)/norm(gp(:,k));
@@ -58,6 +57,8 @@ for R=1:Realization
                 gc(:,k)=gc(:,k)/norm(gc(:,k));
                 gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
                 end
+                
+                Gc_w=[gc_w(:,1);gc_w(:,2)];
             
            
             %Backward Training
@@ -87,10 +88,10 @@ for R=1:Realization
                                     end
                                 end
 
-                                neq_p_w(:,:,k) = [0 0;0 0];
+                                neq_p_w(:,iter1,k) = [0;0];
                                 for j = 1:2
                                     if j~=k;
-                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + Z{k,j}*gp_w(:,j)*gp_w(:,j)'*Z{k,j}';
+                                        neq_p_w(:,iter1,k) = neq_p_w(:,iter1,k) + Z{k,j}*gp_w(:,j);
                                     end
                                 end
                                 
@@ -124,13 +125,13 @@ for R=1:Realization
                                                 +neq(:,iter1,k);
                     end
                            
-                    
-                    
             end
+                    
+            
             
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,:,k)...  
+                                            + neq_p_w(:,iter1,k)*(neq_p_w(:,iter1,k))'...  
                                             + eye(2)*sigma^2 ...
                                             + Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'...
                                             + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...
@@ -138,25 +139,36 @@ for R=1:Realization
                                             + (Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))')'...
                                             ) * (Z{k,k}*gp_w(:,k)); 
                                         
-                            vc_w(:,k) = inv(  Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'  + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...  
-                                        + Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))'+ (Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))')'...
-                                        + eye(2)*sigma^2 ...
-                                        + Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'...
-                                        + neq_p_w(:,:,k)...
-                                        ) * all_w(:,iter1,k); 
+                            
+                            
                     end
+                    
+                    Vc_w = inv(  Big_Z*Gc_w*Gc_w'*Big_Z'...
+                                        +Big_Z*[gp_w(:,1)*gp_w(:,1)' 0*eye(2);0*eye(2) gp_w(:,1)*gp_w(:,1)' ]*Big_Z'...
+                                        +sigma^2*eye(4) )*(Big_Z*Gc_w);
             
                     for k = 1:2
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
-                    vc(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xc_b';
+                    z = inv([yb(:,:,1);yb(:,:,2)]*[yb(:,:,1);yb(:,:,2)]')*[yb(:,:,1);yb(:,:,2)]*xc_b';
+                    vc(:,k)=z(2*k-1:2*k);
                     end
             
                     for k = 1:2
-                    vp(:,k)=vp(:,k)/norm(vp(:,k));
-                    vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
-                    vc(:,k)=vc(:,k)/norm(vc(:,k));
-                    vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
+                    
+                    vc(:,k)=sqrt(2)*vc(:,k)/norm([vc(:,1);vc(:,2)]);
                     end
+                    
+                    Vc_w=sqrt(2)*Vc_w/norm(Vc_w);
+                    for k = 1:2
+                    vc_w(:,k)=Vc_w(2*k-1:2*k); 
+                    end
+                    
+                    for k = 1:2
+                    vp(:,k)=sqrt((4-norm(vc(:,k))^2))*vp(:,k)/norm(vp(:,k));
+                    vp_w(:,k)=sqrt((4-norm(vc_w(:,k))^2))*vp_w(:,k)/norm(vp_w(:,k));
+                    end
+                    
+                    
        
 
             %Forward Training  
@@ -185,10 +197,10 @@ for R=1:Realization
                                     end
                                 end
 
-                                neq_p_w(:,:,k) = [0 0;0 0];
+                                neq_p_w(:,iter2,k) = [0;0];
                                 for j = 1:2
                                     if j~=k;
-                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + H{k,j}*vp_w(:,j)*vp_w(:,j)'*H{k,j}';
+                                        neq_p_w(:,iter2,k) = neq_p_w(:,iter2,k) + H{k,j}*vp_w(:,j);
                                     end
                                 end
                                 
@@ -225,7 +237,7 @@ for R=1:Realization
     
                 for k = 1:2 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
-                                + neq_p_w(:,:,k)...  
+                                + neq_p_w(:,iter2,k)*(neq_p_w(:,iter2,k))'...  
                                 + eye(2)*sigma^2 ...
                                 + H{k,k}*vc_w(:,k)*vc_w(:,k)'*H{k,k}'...
                                 + neq_w(:,iter2,k)*(neq_w(:,iter2,k))'...
@@ -237,7 +249,7 @@ for R=1:Realization
                             + neq_w(:,iter2,k)*vc_w(:,k)'*H{k,k}'  + H{k,k}*vc_w(:,k)*(neq_w(:,iter2,k))'...
                             + eye(2)*sigma^2 ...
                             + H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
-                            + neq_p_w(:,:,k)...
+                            + neq_p_w(:,iter2,k)*(neq_p_w(:,iter2,k))'...
                             ) * all_w(:,iter2,k);  
                         
           
@@ -255,7 +267,7 @@ for R=1:Realization
                       
             
     
-            %for SINR
+                %for SINR
             for k = 1:2
                 
                 %%%%%%%%%%%
@@ -322,15 +334,14 @@ for R=1:Realization
                       +(    norm( gc_w(:,k)'*all_SINR_w(:,iteration,k)  )^2/(  norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ) + all_SINR_w_cp(iteration,k)    ))/Realization; 
             end
     
-    
     end
            
-end
+  end
 
  n=1:iteration;
  plot(   n,  log2(1+SINR_p_without_stat(n,1,i))+log2(1+SINR_p_without_stat(n,2,i))+log2(1+SINR_p_know_stat(n,1,i))+log2(1+SINR_p_know_stat(n,2,i)) );
  hold on
-
+  
 end
    
 plot( n,log2(1+SINR_c_know_stat(n,1,i))+log2(1+SINR_c_know_stat(n,2,i))+log2(1+SINR_p_know_stat(n,1,i))+log2(1+SINR_p_know_stat(n,2,i)));
@@ -339,8 +350,10 @@ plot( n,log2(1+SINR_c_know_stat(n,1,i))+log2(1+SINR_c_know_stat(n,2,i))+log2(1+S
 
 legend('C(Bi-Directional);2M=4',...
        'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
-       'C(Bi-Directional);2M=32','C(Max-SINR)')
+       'C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;2 User;Fixed 2X2 MIMO;no coop;1000 Realization')
-axis([1 iteration 10 20])
+title('LS;2 User;Fixed 2X2 MIMO;coop;1000 Realization')
+axis([1 iteration 0 25])
+
+

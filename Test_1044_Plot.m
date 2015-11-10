@@ -6,7 +6,7 @@
 clc
 clear
 
-for i = [4,8,16,32]; %FilterLength
+for i = [4,8,16]; %FilterLength
 
 for k=1:2
 SINR_c_without_stat(:,k,i)= zeros(100,1);
@@ -324,7 +324,7 @@ for iteration = 1:50
                       SINR_c_without_stat(iteration,k,i) ...
                       +(    norm(gc(:,k)'*all_SINR(:,iteration,k)   )^2/(  norm( gc(:,k)'*eye(2)*sigma^2*gc(:,k) )  + all_SINR_cp(iteration,k)     ))/Realization;
             SINR_c_know_stat(iteration,k,i)= ...
-                      SINR_c_know_stat(iteration,k) ...
+                      SINR_c_know_stat(iteration,k,i) ...
                       +(    norm( gc_w(:,k)'*all_SINR_w(:,iteration,k)  )^2/(  norm( gc_w(:,k)'*eye(2)*sigma^2*gc_w(:,k) ) + all_SINR_w_cp(iteration,k)    ))/Realization; 
             end
     
@@ -344,10 +344,10 @@ plot( n,log2(1+SINR_c_know_stat(n,1,i))+log2(1+SINR_c_know_stat(n,2,i))+log2(1+S
 
 legend('C(Bi-Directional);2M=4',...
        'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
-       'C(Bi-Directional);2M=32','C(Max-SINR)')
+       'C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;coop;1000 Realization')
-axis([1 iteration 10 20])
+axis([1 iteration 0 20])
 
 
