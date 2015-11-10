@@ -10,7 +10,7 @@ clear
 
 sigma = sqrt(10^(-3));
 
-for i = [2,4,8,16,32]; %FilterLength
+for i = [4,8,16,32]; %FilterLength
     
     i
 
@@ -19,7 +19,7 @@ SINR_without_stat(:,k,i)= zeros(100,1);
 SINR_know_stat(:,k,i)= zeros(100,1);
 end
 
-Realization=50;
+Realization=1000;
 
 
  for R=1:Realization
@@ -198,7 +198,7 @@ for iteration = 1:100
 
 plot( n,log2(1+SINR_know_stat(n,1,i))+log2(1+SINR_know_stat(n,2,i)));
 
-legend('C(Bi-Directional);2M=2','C(Bi-Directional);2M=4',...
+legend('C(Bi-Directional);2M=4',...
        'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
        'C(Bi-Directional);2M=32','C(Max-SINR)')
 xlabel('Iteration')
