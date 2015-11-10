@@ -7,7 +7,7 @@ clc
 clear
 
 
-for i = [4,8,16,32]; %FilterLength
+for i = [4,8,16]; %FilterLength
 
 for k=1:2
 SINR_c_without_stat(:,k,i)= zeros(100,1);
@@ -18,7 +18,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=1000;
+Realization=10;
 
 
 for R=1:Realization
@@ -47,7 +47,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:100
+        for iteration = 1:50
    
            
     
@@ -339,7 +339,7 @@ plot( n,log2(1+SINR_c_know_stat(n,1,i))+log2(1+SINR_c_know_stat(n,2,i))+log2(1+S
 
 legend('C(Bi-Directional);2M=4',...
        'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
-       'C(Bi-Directional);2M=32','C(Max-SINR)')
+       'C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;no coop;1000 Realization')

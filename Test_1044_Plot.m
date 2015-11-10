@@ -17,7 +17,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=1000;
+Realization=10;
 
   for R=1:Realization
         
@@ -47,7 +47,7 @@ Realization=1000;
             
         end
 
-for iteration = 1:100
+for iteration = 1:50
     
 
                 %Normalized g

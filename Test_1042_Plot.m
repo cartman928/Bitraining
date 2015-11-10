@@ -10,7 +10,7 @@ clear
 
 sigma = sqrt(10^(-3));
 
-for i = [4,8,16,32]; %FilterLength
+for i = [4,8,16]; %FilterLength
     
     i
 
@@ -44,7 +44,7 @@ Realization=1000;
         end
 
 
-for iteration = 1:100
+for iteration = 1:50
 
     
             for k = 1:2
@@ -200,7 +200,7 @@ plot( n,log2(1+SINR_know_stat(n,1,i))+log2(1+SINR_know_stat(n,2,i)));
 
 legend('C(Bi-Directional);2M=4',...
        'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
-       'C(Bi-Directional);2M=32','C(Max-SINR)')
+       'C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;2X2 MIMO;Private Messages;1000 Realization')
