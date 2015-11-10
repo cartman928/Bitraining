@@ -17,7 +17,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=10;
+Realization=1000;
 
   for R=1:Realization
         

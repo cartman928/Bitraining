@@ -204,6 +204,6 @@ legend('C(Bi-Directional);2M=4',...
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;2X2 MIMO;Private Messages;1000 Realization')
-axis([1 iteration 5 15])
+axis([1 iteration 0 25])
 
 

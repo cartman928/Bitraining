@@ -18,7 +18,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=10;
+Realization=1000;
 
 
 for R=1:Realization
@@ -343,4 +343,4 @@ legend('C(Bi-Directional);2M=4',...
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;no coop;1000 Realization')
-axis([1 iteration 10 20])
+axis([1 iteration 0 25])
