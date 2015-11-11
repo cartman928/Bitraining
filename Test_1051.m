@@ -1,4 +1,4 @@
-%2 user, 2X2 MIMO Channel
+%3 user, 2X2 MIMO Channel
 %Turn Off Common Channel 
 %calculate MSE
 %LS Filter
@@ -78,14 +78,14 @@ for iteration = 1:50
                     for k = 1:3
 
                                 neq_p(:,iter1,k) = [0;0];
-                                for j = 1:2
+                                for j = 1:3
                                     if j~=k; 
                                         neq_p(:,iter1,k) = neq_p(:,iter1,k) + Z{k,j}*gp(:,j)*xp_b(j,iter1);
                                     end
                                 end
 
                                 neq_p_w(:,:,k) = [0 0;0 0];
-                                for j = 1:2
+                                for j = 1:3
                                     if j~=k;
                                         neq_p_w(:,:,k) = neq_p_w(:,:,k) + Z{k,j}*gp_w(:,j)*gp_w(:,j)'*Z{k,j}';
                                     end
@@ -104,7 +104,7 @@ for iteration = 1:50
            
                     for k = 1:3
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,:,k)*(neq_p_w(:,:,k))'...  
+                                            + neq_p_w(:,:,k)...  
                                             + eye(2)*sigma^2  ) * (Z{k,k}*gp_w(:,k)); 
                     end
             
@@ -134,14 +134,14 @@ for iteration = 1:50
                     for k = 1:3
 
                                 neq_p(:,iter2,k) = [0;0];
-                                for j = 1:2
+                                for j = 1:3
                                     if j~=k; 
                                         neq_p(:,iter2,k) = neq_p(:,iter2,k) + H{k,j}*vp(:,j)*xp_f(j,iter2);
                                     end
                                 end
 
                                 neq_p_w(:,:,k) = [0 0;0 0];
-                                for j = 1:2
+                                for j = 1:3
                                     if j~=k;
                                         neq_p_w(:,:,k) = neq_p_w(:,:,k) + H{k,j}*vp_w(:,j)*vp_w(:,j)'*H{k,j}';
                                     end
@@ -160,7 +160,7 @@ for iteration = 1:50
     
                 for k = 1:3 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
-                                + neq_p_w(:,:,k)*(neq_p_w(:,:,k))'...  
+                                + neq_p_w(:,:,k)...  
                                 + eye(2)*sigma^2  ) * (H{k,k}*vp_w(:,k)); 
                 end
 
@@ -209,7 +209,7 @@ for iteration = 1:50
 plot( n,log2(1+SINR_know_stat(n,1,i))+log2(1+SINR_know_stat(n,2,i))+log2(1+SINR_know_stat(n,3,i)) );
 
 legend('C(Bi-Directional);2M=4',...
-       'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
+       'C(Bi-Directional);2M=10',...
        'C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')

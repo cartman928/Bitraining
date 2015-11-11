@@ -16,7 +16,7 @@ end
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=100;
+Realization=1;
 
 
  for R=1:Realization
@@ -33,15 +33,15 @@ Realization=100;
         H{3,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{3,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
-        Z{3,3}=H{3,3}.';
-        Z{3,1}=H{1,3}.';
-        Z{3,2}=H{2,3}.';
-        Z{1,3}=H{3,1}.';
-        Z{2,3}=H{3,2}.';
+        Z{1,1}=H{1,1}';
+        Z{1,2}=H{2,1}';
+        Z{2,1}=H{1,2}';
+        Z{2,2}=H{2,2}';
+        Z{3,3}=H{3,3}';
+        Z{3,1}=H{1,3}';
+        Z{3,2}=H{2,3}';
+        Z{1,3}=H{3,1}';
+        Z{2,3}=H{3,2}';
         
         for k = 1:3
         gp(:,k)=[1;1];
@@ -111,12 +111,15 @@ for iteration = 1:50
             
                     for k = 1:3
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
-                    end
-            
+                    end  
+                    
+                    
                     for k = 1:3
-                    vp(:,k)=conj(vp(:,k))/norm(vp(:,k));
-                    vp_w(:,k)=conj(vp_w(:,k))/norm(vp_w(:,k));
+                    vp(:,k)=(vp(:,k))/norm(vp(:,k));
+                    vp_w(:,k)=(vp_w(:,k))/norm(vp_w(:,k));
                     end
+                    
+                    
        
 
             %Forward Training  

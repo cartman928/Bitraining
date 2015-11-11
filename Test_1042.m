@@ -6,7 +6,7 @@
 clc
 clear
 
-function [C] = Test_1042(realization,sigma,StepSize,k,z)
+
 
 for k=1:2
 SINR_without_stat(:,k)= zeros(100,1);
@@ -15,8 +15,8 @@ end
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
-Realization=300;
+i = 20; %FilterLength
+Realization=10;
 
 
  for R=1:Realization
@@ -28,10 +28,10 @@ Realization=300;
         H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
+        Z{1,1}=H{1,1}';
+        Z{1,2}=H{2,1}';
+        Z{2,1}=H{1,2}';
+        Z{2,2}=H{2,2}';
         
         for k = 1:2
         gp(:,k)=[1;1];
@@ -91,7 +91,7 @@ for iteration = 1:50
            
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,:,k)*(neq_p_w(:,:,k))'...  
+                                            + neq_p_w(:,:,k)...  
                                             + eye(2)*sigma^2  ) * (Z{k,k}*gp_w(:,k)); 
                     end
             
@@ -147,7 +147,7 @@ for iteration = 1:50
     
                 for k = 1:2 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
-                                + neq_p_w(:,:,k)*(neq_p_w(:,:,k))'...  
+                                + neq_p_w(:,:,k)...  
                                 + eye(2)*sigma^2  ) * (H{k,k}*vp_w(:,k)); 
                 end
 
@@ -184,8 +184,8 @@ for iteration = 1:50
     
     end
            
-end
 
+ end
    
 
 n=1:iteration;

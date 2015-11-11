@@ -6,14 +6,14 @@ clear
 
 H=[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-v=[0;0];
-g=[1;1];
-g_w=[1;1];
-g=g/norm(g);
-g_w=g_w/norm(g_w);
+g=[0;0];
+v=[1;1];
+v_w=[1;1];
+v=v/norm(v);
+v_w=v_w/norm(v_w);
 
 sigma = sqrt(10^(-3));
-StepSize = 10^(-3);
+StepSize = 10^(-5);
 
 R=H*H'+sigma^2*eye(2);
 2/max(eig(R));
@@ -28,47 +28,27 @@ C_Wiener = zeros(1,10^(7));
 SINR_without_stat = zeros(1,10^(7));
 SINR_know_stat= zeros(1,10^(7));
 
-Realization = 100;
-TrainingLength = 10; %TrainingLength
+Realization = 2;
+TrainingLength = 200; %TrainingLength
 
-for iteration = 1:20
-
+for R = 1:Realization
     
-    iteration
-    
-    for R = 1:Realization
-    
-        v=[0;0];
-        g=[1;1];
-        g_w=[1;1];
+        v=[1;1];
+        v_w=[1;1];
+        g=[0;0];
+        g_w=[0;0];
         
-        g=g/norm(g);
-        g_w=g_w/norm(g_w);
+        v=v/norm(v);
+        v_w=v_w/norm(v_w);
         H=[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+
+for iteration = 1:50
+
     
-        for loop=1:iteration
-                
+    iteration 
                
-                g=g/norm(g);
-                g_w=g_w/norm(g_w);
-
-                %Backward Training
-                for iter1 = 1:TrainingLength
-
-                        if rand-0.5 >= 0
-                                    xb(iter1) = 1;
-                                else
-                                    xb(iter1) = -1;
-                        end
-
-                        yb = H.'*g*xb(iter1)+sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)]; 
-                        v  = v+StepSize*yb*conj(xb(iter1)-v'*yb);
-                        v_w = inv(H.'*g_w*g_w'*(H.')'+eye(2)*sigma^2)*H.'*g_w;
-
-                end
-
-                v=v/norm(v);
-                v_w=v_w/norm(v_w);
+                
+                
 
                 %Forward Training  
                 for iter2 = 1:TrainingLength
@@ -80,17 +60,40 @@ for iteration = 1:20
                         end
 
                         yf = H*( v*xf(iter2) )+ sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]; 
-                        g = g+StepSize*yf*conj(xf(iter2)-g'*yf);
+                        g = g+StepSize*yf*conj(xf(iter2)-g'*yf)/(norm(yf))^2;
                         g_w = inv(H*v_w*v_w'*H'+eye(2)*sigma^2)*H*v_w;
                 end
                 
                 
-        end
+                MSE(iteration) =MSE(iteration)+ real(  1-v'*H'*g-(v'*H'*g)'+g'*eye(2)*(sigma^2)*g+(v'*H'*g)'*(v'*H'*g) )/Realization;
+                SINR_without_stat(iteration)=SINR_without_stat(iteration)+ norm(( g'*H*v ))^2/norm( g'*eye(2)*sigma^2*g )/Realization; 
+                SINR_know_stat(iteration)= SINR_know_stat(iteration)+norm(( g_w'*H*v_w ))^2/norm( g_w'*eye(2)*sigma^2*g_w )/Realization; 
+                MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
+                
+                g=g/norm(g);
+                g_w=g_w/norm(g_w);
+
+                
+                %Backward Training
+                for iter1 = 1:TrainingLength
+
+                        if rand-0.5 >= 0
+                                    xb(iter1) = 1;
+                                else
+                                    xb(iter1) = -1;
+                        end
+
+                        yb = H'*g*xb(iter1)+sigma*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)]; 
+                        v  = v+StepSize*yb*conj(xb(iter1)-v'*yb)/(norm(yb))^2;
+                        v_w = inv(H'*g_w*g_w'*H'+eye(2)*sigma^2)*H'*g_w;
+
+                end
+        
+                v=v/norm(v);
+                v_w=v_w/norm(v_w);
+                
+                
     
-    MSE(iteration) =MSE(iteration)+ real(  1-v'*H'*g-(v'*H'*g)'+g'*eye(2)*(sigma^2)*g+(v'*H'*g)'*(v'*H'*g) )/Realization;
-    SINR_without_stat(iteration)=SINR_without_stat(iteration)+ norm(( g'*H*v ))^2/norm( g'*eye(2)*sigma^2*g )/Realization; 
-    SINR_know_stat(iteration)= SINR_know_stat(iteration)+norm(( g_w'*H*v_w ))^2/norm( g_w'*eye(2)*sigma^2*g_w )/Realization; 
-    MMSE(iteration) = real(   1-v'*H'* inv(H*v*v'*H'+eye(2)*sigma^2)*H*v);
     
     end
            

@@ -18,7 +18,7 @@ end
 
 sigma = sqrt(10^(-3));
 
-Realization=1000;
+Realization=10;
 
 
 for R=1:Realization
@@ -30,10 +30,10 @@ for R=1:Realization
         H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
+        Z{1,1}=H{1,1}';
+        Z{1,2}=H{2,1}';
+        Z{2,1}=H{1,2}';
+        Z{2,2}=H{2,2}';
 
         for k = 1:2
             gp(:,k)=[1;1];
@@ -47,7 +47,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:50
+        for iteration = 1:100
    
            
     
@@ -343,4 +343,4 @@ legend('C(Bi-Directional);2M=4',...
 xlabel('Iteration')
 ylabel('C')
 title('LS;2 User;Fixed 2X2 MIMO;no coop;1000 Realization')
-axis([1 iteration 0 25])
+axis([1 iteration 10 30])
