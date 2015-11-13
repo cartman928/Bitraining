@@ -6,17 +6,10 @@
 clc
 clear
 
-
-
-for k=1:3
-SINR_without_stat(:,k)= zeros(10^4,1);
-SINR_know_stat(:,k)= zeros(10^4,1);
-end
-
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=100;
+Realization=1000;
 
 
  for R=1:Realization
@@ -33,15 +26,15 @@ Realization=100;
         H{3,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{3,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}.';
-        Z{1,2}=H{2,1}.';
-        Z{2,1}=H{1,2}.';
-        Z{2,2}=H{2,2}.';
-        Z{3,3}=H{3,3}.';
-        Z{3,1}=H{1,3}.';
-        Z{3,2}=H{2,3}.';
-        Z{1,3}=H{3,1}.';
-        Z{2,3}=H{3,2}.';
+        Z{1,1}=H{1,1}';
+        Z{1,2}=H{2,1}';
+        Z{2,1}=H{1,2}';
+        Z{2,2}=H{2,2}';
+        Z{3,3}=H{3,3}';
+        Z{3,1}=H{1,3}';
+        Z{3,2}=H{2,3}';
+        Z{1,3}=H{3,1}';
+        Z{2,3}=H{3,2}';
         
         for k = 1:3
         gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
@@ -52,7 +45,7 @@ Realization=100;
         
        
 
-for iteration = 1:200
+for iteration = 1:100
     
     
            
@@ -98,19 +91,18 @@ for iteration = 1:200
             end
             
                     for k = 1:3
-                            vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,:,k)...  
-                                            + eye(2)*sigma^2  ) * (Z{k,k}*gp_w(:,k)); 
+                    vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
+                                      + neq_p_w(:,:,k)...  
+                                      + eye(2)*sigma^2  ) * (Z{k,k}*gp_w(:,k)); 
                     end
             
                     for k = 1:3
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
                     end  
-                    
-                    
+                       
                     for k = 1:3
-                    vp(:,k)=conj(vp(:,k))/norm(vp(:,k));
-                    vp_w(:,k)=conj(vp_w(:,k))/norm(vp_w(:,k));
+                    vp(:,k)=(vp(:,k))/norm(vp(:,k));
+                    vp_w(:,k)=(vp_w(:,k))/norm(vp_w(:,k));
                     end
                     
                     
@@ -206,11 +198,11 @@ end
 
 n=1:iteration;
 
-plot(   n,  mean(C_without_stat), n,  mean(C_know_stat)  )
+plot(   n,  mean(C_without_stat),   'r', n,  mean(C_know_stat), 'k' )
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;3 User;Fixed 2X2 MIMO;Pilot Length=50')
-axis([1 iteration 0 40])
+title('LS;3 User;Fixed 2X2 MIMO;Pilot Length 2M=20')
+axis([1 iteration 10 30])
 
 
