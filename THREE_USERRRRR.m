@@ -16,7 +16,7 @@ end
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=50;
+Realization=100;
 
 
  for R=1:Realization
@@ -24,14 +24,14 @@ Realization=50;
         R
         
         H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{3,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{1,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{2,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{3,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{3,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
         Z{1,1}=H{1,1}.';
         Z{1,2}=H{2,1}.';
@@ -52,15 +52,9 @@ Realization=50;
         
        
 
-for iteration = 1:32
+for iteration = 1:200
     
-    iteration;
     
-            for k = 1:3  
-            gp(:,k)=conj(gp(:,k))/norm(gp(:,k));
-            gp_w(:,k)=conj(gp_w(:,k))/norm(gp_w(:,k));
-            end
-            
            
             %Backward Training
             for iter1 = 1:FilterLength
@@ -169,6 +163,11 @@ for iteration = 1:32
                 gp(:,k)  = inv(yf(:,:,k)*yf(:,:,k)')*yf(:,:,k)*xp_f(k,:)';
                 end
                 
+                for k = 1:3
+                gp(:,k)=gp(:,k)/norm(gp(:,k));
+                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+                end
+                
             
     
             for k = 1:3
@@ -189,18 +188,17 @@ for iteration = 1:32
         
             end
             
-            %%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%
             for k = 1:3
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            SINR_without_stat(iteration,k,R)= (norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/( neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ));
+            SINR_know_stat(iteration,k,R)= (norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/( neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ));
             end
-    
+            
+            C_without_stat(R,iteration)=0;
+            C_know_stat(R,iteration)=0;
             for k = 1:3
-            SINR_without_stat(iteration,k)= SINR_without_stat(iteration,k)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/(  neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k)= SINR_know_stat(iteration,k)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/(  neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            C_without_stat(R,iteration)=C_without_stat(R,iteration)+log2(1+SINR_without_stat(iteration,k,R));
+            C_know_stat(R,iteration)=C_know_stat(R,iteration)+log2(1+SINR_know_stat(iteration,k,R));
             end
-    
     end
            
 end
@@ -208,7 +206,7 @@ end
 
 n=1:iteration;
 
-plot(   n,  log2(1+SINR_without_stat(n,1))+log2(1+SINR_without_stat(n,2))+log2(1+SINR_without_stat(n,3)), n,  log2(1+SINR_know_stat(n,1))+log2(1+SINR_know_stat(n,2))+log2(1+SINR_know_stat(n,3)) )
+plot(   n,  mean(C_without_stat), n,  mean(C_know_stat)  )
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
