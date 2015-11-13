@@ -6,19 +6,9 @@
 clc
 clear
 
-
-
 sigma = sqrt(10^(-3));
 
-for i = [10]; %FilterLength
-    
-    i
-
-for k=1:3
-SINR_without_stat(:,k,i)= zeros(100,1);
-SINR_know_stat(:,k,i)= zeros(100,1);
-end
-
+i = 10; %FilterLength
 Realization=100;
 
 
@@ -30,8 +20,6 @@ Realization=100;
         H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        
-       
 
         Z{1,1}=H{1,1}';
         Z{1,2}=H{2,1}';
@@ -46,7 +34,7 @@ Realization=100;
         end
 
 
-for iteration = 1:100
+for iteration = 1:200
 
     
             for k = 1:2
@@ -183,29 +171,28 @@ for iteration = 1:100
             end
     
             for k = 1:2
-            SINR_without_stat(iteration,k,i)= SINR_without_stat(iteration,k,i)+(norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/( neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ))/Realization;
-            SINR_know_stat(iteration,k,i)= SINR_know_stat(iteration,k,i)+(norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/( neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ))/Realization;
+            SINR_without_stat(iteration,k,R)= (norm(  gp(:,k)'*H{k,k}*vp(:,k) )^2/( neq_SINR_p(iteration,k) + norm( gp(:,k)'*eye(2)*sigma^2*gp(:,k) )    ));
+            SINR_know_stat(iteration,k,R)= (norm(   gp_w(:,k)'*H{k,k}*vp_w(:,k) )^2/( neq_SINR_p_w(iteration,k) + norm( gp_w(:,k)'*eye(2)*sigma^2*gp_w(:,k) )   ));
             end
-           
-    
+            
+            C_without_stat(R,iteration)=0;
+            C_know_stat(R,iteration)=0;
+            for k = 1:2
+            C_without_stat(R,iteration)=C_without_stat(R,iteration)+log2(1+SINR_without_stat(iteration,k,R));
+            C_know_stat(R,iteration)=C_know_stat(R,iteration)+log2(1+SINR_know_stat(iteration,k,R));
+            end
+            
     end
            
- end
- 
- n=1:iteration;
- plot(   n,  log2(1+SINR_without_stat(n,1,i))+log2(1+SINR_without_stat(n,2,i)) );
- hold on
- 
- end
 
-plot( n,log2(1+SINR_know_stat(n,1,i))+log2(1+SINR_know_stat(n,2,i)));
+ end
+   
 
-legend('C(Bi-Directional);2M=4',...
-       'C(Bi-Directional);2M=8','C(Bi-Directional);2M=16',...
-       'C(Max-SINR)')
+n=1:iteration;
+
+plot(   n,  mean(C_without_stat), n,  mean(C_know_stat)  )
+legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;2 User;2X2 MIMO;Private Messages;1000 Realization')
+title('LS;2 User;2X2 MIMO;Private Messages;Pilot Length 2M=20')
 axis([1 iteration 0 25])
-
-
