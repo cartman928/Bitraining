@@ -9,7 +9,7 @@ clear
 sigma = sqrt(10^(-3));
 
 i = 10; %FilterLength
-Realization=100;
+Realization=500;
 
 
  for R=1:Realization
@@ -27,8 +27,8 @@ Realization=100;
         Z{2,2}=H{2,2}';
         
         for k = 1:2
-        gp(:,k)=[1;1];
-        gp_w(:,k)=[1;1];
+        gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+        gp_w(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
         gp(:,k)=gp(:,k)/norm(gp(:,k));
         gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
         end
@@ -36,13 +36,7 @@ Realization=100;
 
 for iteration = 1:200
 
-    
-            for k = 1:2
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
-            end
-            
-           
+
             %Backward Training
             for iter1 = 1:i
 
@@ -148,8 +142,12 @@ for iteration = 1:200
                 gp(:,k)  = inv(yf(:,:,k)*yf(:,:,k)')*yf(:,:,k)*xp_f(k,:)';
                 end
                 
-                      
-           
+                for k = 1:2
+                gp(:,k)=gp(:,k)/norm(gp(:,k));
+                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+                end
+                
+
     
             for k = 1:2
         
