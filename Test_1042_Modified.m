@@ -8,7 +8,7 @@ clear
 
 sigma = sqrt(10^(-3));
 
-i = 10; %FilterLength
+i = 20; %FilterLength
 Realization=500;
 
 
