@@ -16,7 +16,7 @@ end
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=1;
+Realization=50;
 
 
  for R=1:Realization
@@ -24,41 +24,41 @@ Realization=1;
         R
         
         H{1,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{1,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{2,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{3,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{1,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{2,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{3,1}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
+        H{3,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-        Z{1,1}=H{1,1}';
-        Z{1,2}=H{2,1}';
-        Z{2,1}=H{1,2}';
-        Z{2,2}=H{2,2}';
-        Z{3,3}=H{3,3}';
-        Z{3,1}=H{1,3}';
-        Z{3,2}=H{2,3}';
-        Z{1,3}=H{3,1}';
-        Z{2,3}=H{3,2}';
+        Z{1,1}=H{1,1}.';
+        Z{1,2}=H{2,1}.';
+        Z{2,1}=H{1,2}.';
+        Z{2,2}=H{2,2}.';
+        Z{3,3}=H{3,3}.';
+        Z{3,1}=H{1,3}.';
+        Z{3,2}=H{2,3}.';
+        Z{1,3}=H{3,1}.';
+        Z{2,3}=H{3,2}.';
         
         for k = 1:3
-        gp(:,k)=[1;1];
-        gp_w(:,k)=[1;1];
+        gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+        gp_w(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
         gp(:,k)=gp(:,k)/norm(gp(:,k));
         gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
         end
         
        
 
-for iteration = 1:50
+for iteration = 1:32
     
     iteration;
     
             for k = 1:3  
-            gp(:,k)=gp(:,k)/norm(gp(:,k));
-            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            gp(:,k)=conj(gp(:,k))/norm(gp(:,k));
+            gp_w(:,k)=conj(gp_w(:,k))/norm(gp_w(:,k));
             end
             
            
@@ -115,8 +115,8 @@ for iteration = 1:50
                     
                     
                     for k = 1:3
-                    vp(:,k)=(vp(:,k))/norm(vp(:,k));
-                    vp_w(:,k)=(vp_w(:,k))/norm(vp_w(:,k));
+                    vp(:,k)=conj(vp(:,k))/norm(vp(:,k));
+                    vp_w(:,k)=conj(vp_w(:,k))/norm(vp_w(:,k));
                     end
                     
                     
@@ -187,6 +187,13 @@ for iteration = 1:50
                     end
                 end
         
+            end
+            
+            %%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%
+            for k = 1:3
+            gp(:,k)=gp(:,k)/norm(gp(:,k));
+            gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
             end
     
             for k = 1:3
