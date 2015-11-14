@@ -8,7 +8,7 @@ clear
 
 sigma = sqrt(10^(-3));
 
-i = 20; %FilterLength
+FilterLength = 20; %FilterLength
 Realization=500;
 
 
@@ -38,7 +38,7 @@ for iteration = 1:200
 
 
             %Backward Training
-            for iter1 = 1:i
+            for iter1 = 1:FilterLength
 
                     for k =1:2
                         if rand-0.5 >= 0
@@ -95,7 +95,7 @@ for iteration = 1:200
        
 
             %Forward Training  
-            for iter2 = 1:i
+            for iter2 = 1:FilterLength
 
                     for k = 1:2
                         if rand-0.5 >= 0
