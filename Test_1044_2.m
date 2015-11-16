@@ -1,19 +1,24 @@
 %2 user, 2X2 MIMO Channel
-%All Channels(without cooperation)
+%All Channels(cooperation)
 %calculate MSE
 %LS Filter
 %add realization function
 clc
 clear
 
+for k=1:2
+SINR_c_without_stat(:,k)= zeros(100,1);
+SINR_c_know_stat(:,k)= zeros(100,1);
+SINR_p_without_stat(:,k)= zeros(100,1);
+SINR_p_know_stat(:,k)= zeros(100,1);
+end
 
 sigma = sqrt(10^(-3));
 
-FilterLength = 10; %FilterLength
-Realization=1000;
+i = 10; %FilterLength
+Realization=500;
 
-
-for R=1:Realization
+  for R=1:Realization
         
         R
         
@@ -21,39 +26,43 @@ for R=1:Realization
         H{1,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
         H{2,2}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,3}=(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{1,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{2,3}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,1}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
-        H{3,2}=0.8*(1/sqrt(2))*[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
         Z{1,1}=H{1,1}';
         Z{1,2}=H{2,1}';
         Z{2,1}=H{1,2}';
         Z{2,2}=H{2,2}';
-        Z{3,3}=H{3,3}';
-        Z{3,1}=H{1,3}';
-        Z{3,2}=H{2,3}';
-        Z{1,3}=H{3,1}';
-        Z{2,3}=H{3,2}';
+        Big_Z = [Z{1,1} Z{1,2};Z{2,1} Z{2,2}];
 
         for k = 1:2
-            gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-            gp_w(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-            gc(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-            gc_w(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
-            gc(:,k)=gc(:,k)/norm(gc(:,k));
-            gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
+            gp(:,k)=[1;1];
+            gp_w(:,k)=[1;1];
             gp(:,k)=gp(:,k)/norm(gp(:,k));
             gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+            gc(:,k)=[1;1];
+            gc_w(:,k)=[1;1];
+            gc(:,k)=gc(:,k)/norm(gc(:,k));
+            gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
+            
+            
         end
 
-
-        for iteration = 1:10
+for iteration = 1:40
     
+    iteration;
+
+                %Normalized g
+                for k = 1:2
+                gp(:,k)=gp(:,k)/norm(gp(:,k));
+                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
+                gc(:,k)=gc(:,k)/norm(gc(:,k));
+                gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
+                end
+                
+                Gc_w=[gc_w(:,1);gc_w(:,2)];
+            
            
             %Backward Training
-            for iter1 = 1:FilterLength
+            for iter1 = 1:i
 
                     for k =1:2
                         if rand-0.5 >= 0
@@ -108,7 +117,7 @@ for R=1:Realization
                            
                     end
                     
-                    for k = 1:2  
+                    for k = 1:2    
                                 yb(:,iter1,k) = Z{k,k}*(gp(:,k)*xp_b(k,iter1))...
                                                 +neq_p(:,iter1,k)...
                                                 +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]...
@@ -116,13 +125,13 @@ for R=1:Realization
                                                 +neq(:,iter1,k);
                     end
                            
-                    
-                    
             end
+                    
+            
             
                     for k = 1:2
                             vp_w(:,k) = inv(  Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'... 
-                                            + neq_p_w(:,:,k)...  
+                                            + neq_p_w(:,:,k)...
                                             + eye(2)*sigma^2 ...
                                             + Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'...
                                             + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...
@@ -130,29 +139,34 @@ for R=1:Realization
                                             + (Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))')'...
                                             ) * (Z{k,k}*gp_w(:,k)); 
                                         
-                            vc_w(:,k) = inv(  Z{k,k}*gc_w(:,k)*gc_w(:,k)'*Z{k,k}'  + neq_w(:,iter1,k)*(neq_w(:,iter1,k))'...  
-                                        + Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))'+ (Z{k,k}*gc_w(:,k)*(neq_w(:,iter1,k))')'...
-                                        + eye(2)*sigma^2 ...
-                                        + Z{k,k}*gp_w(:,k)*gp_w(:,k)'*Z{k,k}'...
-                                        + neq_p_w(:,:,k)...
-                                        ) * all_w(:,iter1,k); 
+                            
+                            
                     end
+                    
+                    Vc_w = inv(  Big_Z*Gc_w*Gc_w'*Big_Z'...
+                                        +Big_Z*[gp_w(:,1)*gp_w(:,1)' 0*eye(2);0*eye(2) gp_w(:,2)*gp_w(:,2)' ]*Big_Z'...
+                                        +sigma^2*eye(4) )*(Big_Z*Gc_w);
             
                     for k = 1:2
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
-                    vc(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xc_b';
+                    z = inv([yb(:,:,1);yb(:,:,2)]*[yb(:,:,1);yb(:,:,2)]')*[yb(:,:,1);yb(:,:,2)]*xc_b';
+                    vc(:,k)=z(2*k-1:2*k);
                     end
             
                     for k = 1:2
                     vp(:,k)=vp(:,k)/norm(vp(:,k));
                     vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
-                    vc(:,k)=vc(:,k)/norm(vc(:,k));
-                    vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
+                    vc(:,k)=sqrt(2)*vc(:,k)/norm([vc(:,1);vc(:,2)]);
+                    end
+                    
+                    Vc_w=sqrt(2)*Vc_w/norm(Vc_w);
+                    for k = 1:2
+                    vc_w(:,k)=Vc_w(2*k-1:2*k); 
                     end
        
 
             %Forward Training  
-            for iter2 = 1:FilterLength
+            for iter2 = 1:i
 
                     for k = 1:2
                         if rand-0.5 >= 0
@@ -180,7 +194,7 @@ for R=1:Realization
                                 neq_p_w(:,:,k) = [0 0;0 0];
                                 for j = 1:2
                                     if j~=k;
-                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + H{k,j}*vp_w(:,j)*vp_w(:,j)'*H{k,j}';
+                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + Z{k,j}*gp_w(:,j)*gp_w(:,j)'*Z{k,j}';
                                     end
                                 end
                                 
@@ -205,7 +219,7 @@ for R=1:Realization
 
                     end
                     
-                    for k = 1:2   
+                    for k = 1:2    
                     yf(:,iter2,k) = H{k,k}*(vp(:,k)*xp_f(k,iter2))...
                                     +neq_p(:,iter2,k)...
                                     +sigma*(1/sqrt(2))*[(randn(1,1)+1i*randn(1,1));(randn(1,1)+1i*randn(1,1))]...
@@ -215,7 +229,7 @@ for R=1:Realization
                    
             end 
     
-                for k = 1:2
+                for k = 1:2 
                 gp_w(:,k) = inv(  H{k,k}*vp_w(:,k)*vp_w(:,k)'*H{k,k}'...
                                 + neq_p_w(:,:,k)...  
                                 + eye(2)*sigma^2 ...
@@ -244,15 +258,10 @@ for R=1:Realization
                 
                 end
                 
-                for k = 1:2
-                gp(:,k)=gp(:,k)/norm(gp(:,k));
-                gp_w(:,k)=gp_w(:,k)/norm(gp_w(:,k));
-                gc(:,k)=gc(:,k)/norm(gc(:,k));
-                gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
-                end      
+                      
             
     
-            %for SINR
+                 %for SINR
             for k = 1:2
                 
                 %%%%%%%%%%%
@@ -336,8 +345,11 @@ n=1:iteration;
 plot(   n,  mean(C_c_without_stat)+mean(C_p_without_stat),   'r', n,  mean(C_c_know_stat)+mean(C_p_know_stat), 'k' )
 
 
+
+
+
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;3 User;Fixed 2X2 MIMO;Pilot Length 2M=20;no coop')
-axis([1 iteration 10 24])
+title('LS;2 User;Fixed 2X2 MIMO;Pilot Length=20;coop')
+axis([1 iteration 10 30])
