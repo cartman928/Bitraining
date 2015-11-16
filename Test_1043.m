@@ -10,7 +10,7 @@ clear
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=100;
+Realization=500;
 
 
 for R=1:Realization
@@ -49,7 +49,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:20
+        for iteration = 1:10
     
            
             %Backward Training
