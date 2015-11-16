@@ -9,7 +9,7 @@ clear
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=10;
+Realization=100;
 
 
  for R=1:Realization
@@ -45,7 +45,7 @@ Realization=10;
         
        
 
-for iteration = 1:100
+for iteration = 1:20
     
     
            
