@@ -1,4 +1,4 @@
-%2 user, 2X2 MIMO Channel
+%3 user, 2X2 MIMO Channel
 %Turn Off Common Channel 
 %calculate MSE
 %LS Filter
@@ -6,9 +6,9 @@
 clc
 clear
 
-sigma = sqrt(10^(-3));
+sigma = sqrt(10^(-2));
 
-FilterLength = 2; %FilterLength
+FilterLength = 20; %FilterLength
 Realization=500;
 
 
@@ -44,7 +44,7 @@ Realization=500;
         end
 
 
-for iteration = 1:2
+for iteration = 1:30
 
 
             %Backward Training
@@ -202,5 +202,5 @@ plot(   n,  mean(C_without_stat), n,  mean(C_know_stat), ' k'  )
 legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
-title('LS;2 User;2X2 MIMO;Private Messages;Pilot Length 2M=20')
-%axis([1 iteration 0 25])
+title('LS;3 User;2X2 MIMO;Private Messages;Pilot Length 2M=20')
+axis([1 iteration 0 20])

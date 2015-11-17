@@ -17,7 +17,7 @@ upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
 iternums = 1:20; % number of iterations
-N_realization = 100; % Number of times to run simulation
+N_realization = 1000; % Number of times to run simulation
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
@@ -99,6 +99,7 @@ end
 
 end
 
+%% Plot
 hold on
 
 p1=plot(iternums, mean(averagerateu(:,:,12))+mean(averageratem(:,:,12)),'Color',[0.9290,0.6940,0.1250]);
@@ -114,12 +115,15 @@ p8=plot(iternums,mean(averageratem(:,:,20)),'Color',[0,0.4470,0.7410],'Marker','
 p9=plot(iternums, mean(averagerateu(:,:,20)),'Color',[0,0.4470,0.7410],'Marker','*');
 
 p10=plot(iternums, mean(averagerateu_w)+mean(averageratem_w),'k');
+p11=plot(iternums, mean(averageratem_w),'k','Marker','o');
+p12=plot(iternums, mean(averagerateu_w),'k','Marker','*');
 
-legend([p1,p4,p5,p10],'C(Bi-Directional Training);2M=12',...
+legend([p1,p4,p7,p10],'C(Bi-Directional Training);2M=12',...
                       'C(Bi-Directional Training);2M=16',...
                       'C(Bi-Directional Training);2M=20',...
                       'C(Max-SINR)')
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
-title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')
-axis([1 numiters 0 25])
+title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;No-Coop')
+%title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
+axis([1 numiters 0 20])
