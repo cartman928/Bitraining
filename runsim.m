@@ -76,14 +76,15 @@ for realization_idx = 1 : N_realization
         %% bi-directional training
             %%LS algorithm
             %%phase 1: backward training to update beamformer
-            %[Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
+            %[Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             [Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            [Vu_w, Vm_w] = Wiener_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
+            [Vu_w, Vm_w] = MaxSINR_backward_cooperation(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             
             
             %%phase 2: forward training to update receive filter
             [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            [Gu_w, Gm_w] = Wiener_forward(H, Vu_w, Vm_w, M1, n0, Bfw, BfwBr, upower, mpower);
+            [Gu_w, Gm_w] = MaxSINR_forward(H, Vu_w, Vm_w, M1, n0, Bfw, BfwBr, upower, mpower);
             
         averagerateu(realization_idx, numiters) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
         averageratem(realization_idx, numiters) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);

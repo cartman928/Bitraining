@@ -1,4 +1,4 @@
-function [Gu_w, Gm_w] = Wiener_forward(H, Vu_w, Vm_w, M1, n0, Bu, Bm, upower, mpower)
+function [Gu_w, Gm_w] = MaxSINR_forward(H, Vu_w, Vm_w, M1, n0, Bu, Bm, upower, mpower)
 %update receive filters by least square algorithm
 
 [Nr,Nt,M,ignore] = size(H);
