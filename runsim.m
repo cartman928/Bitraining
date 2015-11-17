@@ -16,9 +16,9 @@ mpower = ones(1, M);   %power for multicast
 upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
-iternums = 1:100; % number of iterations
-N_realization = 10; % Number of times to run simulation
-traininglength = 1000; % traininglength 2M
+iternums = 1:50; % number of iterations
+N_realization = 200; % Number of times to run simulation
+traininglength = 20; % traininglength 2M
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
@@ -77,7 +77,9 @@ for realization_idx = 1 : N_realization
             %%LS algorithm
             %%phase 1: backward training to update beamformer
             [Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu, Vm] = LS_backward_cooperation(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             [Vu_w, Vm_w] = Wiener_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
+            
             
             %%phase 2: forward training to update receive filter
             [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
