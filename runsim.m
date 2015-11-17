@@ -94,6 +94,7 @@ end
 
 hold on
 plot(iternums, mean(averagerateu)+mean(averageratem), 'b',iternums, mean(averagerateu_w)+mean(averageratem_w), 'k');
+legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Number of iterations')
-ylabel('Rates')
+ylabel('C(bits/channel)')
 title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')
