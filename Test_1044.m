@@ -7,10 +7,10 @@ clc
 clear
 
 
-sigma = sqrt(10^(-3));
+sigma = sqrt(10^(-2));
 
 FilterLength = 10; %FilterLength
-Realization=500;
+Realization=1000;
 
   for R=1:Realization
         
@@ -357,6 +357,6 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;3 User;Fixed 2X2 MIMO;Pilot Length=20;coop')
-axis([1 iteration 10 24])
+axis([1 iteration 10 17])
 
 
