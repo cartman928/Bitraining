@@ -50,7 +50,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:10
+        for iteration = 1:50
     
            
             %Backward Training
