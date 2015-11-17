@@ -5,11 +5,6 @@ function sumrate = calculate_ratem (h, n0, beamformerm, filterm, beamformeru, up
 rate = zeros(1, Nu);
 
 
-for k = 1:Nu
-    beamformerm(:,k) = beamformerm(:,k)./norm(beamformerm(:,k));
-    filterm(:, k) = filterm(:, k)./norm(filterm(:,k));
-end
-
 
 for k = 1:Nu
     signal = mpower(k)*filterm(:,k)'* h(:,:,k,k)*beamformerm(:,k);

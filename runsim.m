@@ -16,8 +16,8 @@ mpower = ones(1, M);   %power for multicast
 upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
-iternums = 1:50; % number of iterations
-N_realization = 1000; % Number of times to run simulation
+iternums = 1:20; % number of iterations
+N_realization = 100; % Number of times to run simulation
 traininglength = 20; % traininglength 2M
 
 averagerateu = zeros(N_realization, length(iternums));

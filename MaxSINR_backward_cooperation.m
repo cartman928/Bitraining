@@ -34,7 +34,7 @@ end
 %Create Big Z Matrix
 for Tr_user_idx = 1:M
         for Re_user_idx = 1:M
-                D{Tr_user_idx,Re_user_idx} = Z(:,:,Tr_user_idx,Re_user_idx)';
+                D{Tr_user_idx,Re_user_idx} = Z(:,:,Tr_user_idx,Re_user_idx);
         end
 end   
 Big_Z = cell2mat(D);

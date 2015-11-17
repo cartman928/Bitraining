@@ -10,7 +10,7 @@ clear
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=1000;
+Realization=100;
 
 
 for R=1:Realization
@@ -37,6 +37,9 @@ for R=1:Realization
         Z{1,3}=H{3,1}';
         Z{2,3}=H{3,2}';
         
+  
+        
+        
 
         for k = 1:3
             gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
@@ -50,7 +53,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:50
+        for iteration = 1:20
     
            
             %Backward Training

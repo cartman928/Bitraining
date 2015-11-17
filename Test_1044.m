@@ -10,7 +10,7 @@ clear
 sigma = sqrt(10^(-2));
 
 FilterLength = 10; %FilterLength
-Realization=1000;
+Realization=100;
 
   for R=1:Realization
         
@@ -36,6 +36,26 @@ Realization=1000;
         Z{1,3}=H{3,1}';
         Z{2,3}=H{3,2}';
         
+        KKK(:,:,1,1)=Z{1,1};
+        KKK(:,:,1,2)=Z{1,2};
+        KKK(:,:,2,1)=Z{2,1};
+        KKK(:,:,2,2)=Z{2,2};
+        KKK(:,:,3,3)=Z{3,3};
+        KKK(:,:,3,1)=Z{3,1};
+        KKK(:,:,3,2)=Z{3,2};
+        KKK(:,:,1,3)=Z{1,3};
+        KKK(:,:,2,3)=Z{2,3};
+        
+        B(:,:,1,1)=H{1,1};
+        B(:,:,1,2)=H{1,2};
+        B(:,:,2,1)=H{2,1};
+        B(:,:,2,2)=H{2,2};
+        B(:,:,3,3)=H{3,3};
+        B(:,:,3,1)=H{3,1};
+        B(:,:,3,2)=H{3,2};
+        B(:,:,1,3)=H{1,3};
+        B(:,:,2,3)=H{2,3};
+        
         Big_Z = [Z{1,1} Z{1,2} Z{1,3};Z{2,1} Z{2,2} Z{2,3};Z{3,1} Z{3,2} Z{3,3}];
 
         for k = 1:3
@@ -50,7 +70,7 @@ Realization=1000;
   
         end
 
-for iteration = 1:50
+for iteration = 1:20
     
     iteration;
 
@@ -142,9 +162,15 @@ for iteration = 1:50
                             
                     end
                     
-                    Vc_w = inv(  Big_Z*Gc_w*Gc_w'*Big_Z'...
+                    Vc_w = (  Big_Z*Gc_w*Gc_w'*Big_Z'...
                                         +Big_Z*[gp_w(:,1)*gp_w(:,1)' 0*eye(2) 0*eye(2);0*eye(2) gp_w(:,2)*gp_w(:,2)'  0*eye(2);0*eye(2) 0*eye(2) gp_w(:,3)*gp_w(:,3)']*Big_Z'...
-                                        +sigma^2*eye(6) )*(Big_Z*Gc_w);
+                                        +sigma^2*eye(6) )\(Big_Z*Gc_w);
+                                    
+                                
+                                    
+                    
+                    
+                                    
             
                     d = inv([yb(:,:,1);yb(:,:,2);yb(:,:,3)]*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]')*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]*xc_b';
                     for k = 1:3
@@ -162,6 +188,9 @@ for iteration = 1:50
                     for k = 1:3
                     vc_w(:,k)=Vc_w(2*k-1:2*k); 
                     end
+                    
+                    
+                    [Vu_w, Vm_w] = MaxSINR_backward_cooperation(KKK, gp_w, gc_w, 10, 10^(-2), sign(randn(10,3)), sign(randn(10,3)), [1 1 1], [1 1 1]);
        
 
             %Forward Training  
@@ -193,7 +222,7 @@ for iteration = 1:50
                                 neq_p_w(:,:,k) = [0 0;0 0];
                                 for j = 1:3
                                     if j~=k;
-                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + Z{k,j}*gp_w(:,j)*gp_w(:,j)'*Z{k,j}';
+                                        neq_p_w(:,:,k) = neq_p_w(:,:,k) + H{k,j}*vp_w(:,j)*vp_w(:,j)'*H{k,j}';
                                     end
                                 end
                                 
@@ -246,7 +275,7 @@ for iteration = 1:50
                             ) * all_w(:,iter2,k);  
                         
           
-                
+                           
                             
                 end
 
@@ -265,7 +294,8 @@ for iteration = 1:50
                 end
                 
                       
-            
+            [Gu_w, Gm_w] = MaxSINR_forward(B, vp_w, vc_w, 10, 10^(-2), sign(randn(10,3)), sign(randn(10,3)), [1 1 1], [1 1 1]);
+   
     
                 %for SINR
             for k = 1:3
@@ -340,6 +370,9 @@ for iteration = 1:50
             C_p_without_stat(R,iteration)=C_p_without_stat(R,iteration)+log2(1+SINR_p_without_stat(iteration,k,R));
             C_p_know_stat(R,iteration)=C_p_know_stat(R,iteration)+log2(1+SINR_p_know_stat(iteration,k,R));
             end
+            
+            averagerateu_w(R, iteration) = calculate_rateu(B, 10^(-2), vp_w, gp_w, vc_w, [1 1 1], [1 1 1]);
+            averageratem_w(R, iteration) = calculate_ratem(B, 10^(-2), vc_w, gc_w, vp_w, [1 1 1], [1 1 1]);
  
     end
            
