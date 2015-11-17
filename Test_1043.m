@@ -10,7 +10,7 @@ clear
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=100;
+Realization=500;
 
 
 for R=1:Realization
@@ -340,4 +340,4 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;3 User;Fixed 2X2 MIMO;Pilot Length 2M=20;no coop')
-axis([1 iteration 10 16])
+axis([1 iteration 10 17])
