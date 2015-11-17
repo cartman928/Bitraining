@@ -146,16 +146,16 @@ for iteration = 1:50
                                         +Big_Z*[gp_w(:,1)*gp_w(:,1)' 0*eye(2) 0*eye(2);0*eye(2) gp_w(:,2)*gp_w(:,2)'  0*eye(2);0*eye(2) 0*eye(2) gp_w(:,3)*gp_w(:,3)']*Big_Z'...
                                         +sigma^2*eye(6) )*(Big_Z*Gc_w);
             
+                    d = inv([yb(:,:,1);yb(:,:,2);yb(:,:,3)]*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]')*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]*xc_b';
                     for k = 1:3
                     vp(:,k)  = inv(yb(:,:,k)*yb(:,:,k)')*yb(:,:,k)*xp_b(k,:)';
-                    z = inv([yb(:,:,1);yb(:,:,2);yb(:,:,3)]*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]')*[yb(:,:,1);yb(:,:,2);yb(:,:,3)]*xc_b';
-                    vc(:,k)=z(2*k-1:2*k);
+                    vc(:,k)=d(2*k-1:2*k,:);
                     end
             
                     for k = 1:3
                     vp(:,k)=vp(:,k)/norm(vp(:,k));
                     vp_w(:,k)=vp_w(:,k)/norm(vp_w(:,k));
-                    vc(:,k)=sqrt(3)*vc(:,k)/norm([vc(:,1);vc(:,2);vc(:,3)]);
+                    vc(:,k)=sqrt(3)*vc(:,k)/norm(d);
                     end
                     
                     Vc_w=sqrt(3)*Vc_w/norm(Vc_w);
