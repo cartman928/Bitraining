@@ -17,14 +17,16 @@ upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
 iternums = 1:20; % number of iterations
-N_realization = 100; % Number of times to run simulation
-traininglength = 20; % traininglength 2M
+N_realization = 500; % Number of times to run simulation
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
 averagerateu_w = zeros(N_realization, length(iternums));
 averageratem_w = zeros(N_realization, length(iternums));
 
+%% Training Length
+for traininglength = [12 16 20] % traininglength 2M
+        traininglength
 %% Start Loop
 for realization_idx = 1 : N_realization
         realization_idx
@@ -76,18 +78,18 @@ for realization_idx = 1 : N_realization
         %% bi-directional training
             %%LS algorithm
             %%phase 1: backward training to update beamformer
-            %[Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
-            %[Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
-            [Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            [Vu_w, Vm_w] = MaxSINR_backward_cooperation(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
+            [Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
+            [Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu_w, Vm_w] = MaxSINR_backward_cooperation(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             
             
             %%phase 2: forward training to update receive filter
             [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
             [Gu_w, Gm_w] = MaxSINR_forward(H, Vu_w, Vm_w, M1, n0, Bfw, BfwBr, upower, mpower);
             
-        averagerateu(realization_idx, numiters) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
-        averageratem(realization_idx, numiters) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
+        averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
+        averageratem(realization_idx, numiters, traininglength) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
         averagerateu_w(realization_idx, numiters) = calculate_rateu(H, n0, Vu_w, Gu_w, Vm_w, upower, mpower);
         averageratem_w(realization_idx, numiters) = calculate_ratem(H, n0, Vm_w, Gm_w, Vu_w, upower, mpower);
     end
@@ -95,10 +97,18 @@ for realization_idx = 1 : N_realization
     
 end
 
+end
+
 hold on
-plot(iternums, mean(averagerateu)+mean(averageratem), 'b',iternums, mean(averagerateu_w)+mean(averageratem_w), 'k');
-legend('C(Bi-Directional Training)','C(Max-SINR)')
+for n = [12 16 20] 
+    plot(iternums, mean(averagerateu(:,:,n))+mean(averageratem(:,:,n)));
+end
+plot(iternums, mean(averagerateu_w)+mean(averageratem_w), 'k');
+legend('C(Bi-Directional Training);2M=12',...
+       'C(Bi-Directional Training);2M=16',...
+       'C(Bi-Directional Training);2M=20',...
+       'C(Max-SINR)')
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
 title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')
-axis([1 numiters 10 17])
+axis([1 numiters 5 20])
