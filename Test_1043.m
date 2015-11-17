@@ -49,7 +49,7 @@ for R=1:Realization
         end
 
 
-        for iteration = 1:20
+        for iteration = 1:10
     
            
             %Backward Training
@@ -340,4 +340,4 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Iteration')
 ylabel('C')
 title('LS;3 User;Fixed 2X2 MIMO;Pilot Length 2M=20;no coop')
-axis([1 iteration 10 24])
+axis([1 iteration 10 16])
