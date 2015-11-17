@@ -17,7 +17,7 @@ upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
 iternums = 1:20; % number of iterations
-N_realization = 500; % Number of times to run simulation
+N_realization = 100; % Number of times to run simulation
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
@@ -100,15 +100,26 @@ end
 end
 
 hold on
-for n = [12 16 20] 
-    plot(iternums, mean(averagerateu(:,:,n))+mean(averageratem(:,:,n)));
-end
-plot(iternums, mean(averagerateu_w)+mean(averageratem_w), 'k');
-legend('C(Bi-Directional Training);2M=12',...
-       'C(Bi-Directional Training);2M=16',...
-       'C(Bi-Directional Training);2M=20',...
-       'C(Max-SINR)')
+
+p1=plot(iternums, mean(averagerateu(:,:,12))+mean(averageratem(:,:,12)),'Color',[0.9290,0.6940,0.1250]);
+p2=plot(iternums,mean(averageratem(:,:,12)),'Color',[0.9290,0.6940,0.1250],'Marker','o');
+p3=plot(iternums, mean(averagerateu(:,:,12)),'Color',[0.9290,0.6940,0.1250],'Marker','*');
+
+p4=plot(iternums, mean(averagerateu(:,:,16))+mean(averageratem(:,:,16)),'Color',[0.6350,0.0780,0.1840]);
+p5=plot(iternums,mean(averageratem(:,:,16)),'Color',[0.6350,0.0780,0.1840],'Marker','o');
+p6=plot(iternums, mean(averagerateu(:,:,16)),'Color',[0.6350,0.0780,0.1840],'Marker','*');
+
+p7=plot(iternums, mean(averagerateu(:,:,20))+mean(averageratem(:,:,20)),'Color',[0,0.4470,0.7410]);
+p8=plot(iternums,mean(averageratem(:,:,20)),'Color',[0,0.4470,0.7410],'Marker','o');
+p9=plot(iternums, mean(averagerateu(:,:,20)),'Color',[0,0.4470,0.7410],'Marker','*');
+
+p10=plot(iternums, mean(averagerateu_w)+mean(averageratem_w),'k');
+
+legend([p1,p4,p5,p10],'C(Bi-Directional Training);2M=12',...
+                      'C(Bi-Directional Training);2M=16',...
+                      'C(Bi-Directional Training);2M=20',...
+                      'C(Max-SINR)')
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
 title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')
-axis([1 numiters 5 20])
+axis([1 numiters 0 25])
