@@ -17,7 +17,7 @@ upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
 iternums = 1:50; % number of iterations
-N_realization = 200; % Number of times to run simulation
+N_realization = 1000; % Number of times to run simulation
 traininglength = 20; % traininglength 2M
 
 averagerateu = zeros(N_realization, length(iternums));
@@ -76,8 +76,8 @@ for realization_idx = 1 : N_realization
         %% bi-directional training
             %%LS algorithm
             %%phase 1: backward training to update beamformer
-            [Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            %[Vu, Vm] = LS_backward_cooperation(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            [Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
             [Vu_w, Vm_w] = Wiener_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             
             
@@ -100,3 +100,4 @@ legend('C(Bi-Directional Training)','C(Max-SINR)')
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
 title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')
+axis([1 numiters 10 17])
