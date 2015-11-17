@@ -16,7 +16,7 @@ for user_idx = 1 : M
             if interf_idx ~= user_idx
                 
                 signal = signal + Z(:,:,user_idx,interf_idx)*mpower(interf_idx)*Gm_w(:,interf_idx);
-                interferencem = interferencem + Z(:,:,user_idx,interf_idx)*upower(interf_idx)*Gu_w(:,interf_idx);
+                interferencem = interferencem + Z(:,:,user_idx,interf_idx)*mpower(interf_idx)*Gm_w(:,interf_idx);
                 Y(:,:,user_idx) = Y(:,:,user_idx) +  Z(:,:,user_idx,interf_idx)*(upower(interf_idx)^2*Gu_w(:,interf_idx)*Gu_w(:,interf_idx)')*Z(:,:,user_idx,interf_idx)'...
                                                   +  Z(:,:,user_idx,user_idx)*mpower(user_idx)*Gm_w(:,user_idx)*mpower(interf_idx)*Gm_w(:,interf_idx)'*Z(:,:,user_idx,interf_idx)'...
                                                   +  (Z(:,:,user_idx,user_idx)*mpower(user_idx)*Gm_w(:,user_idx)*mpower(interf_idx)*Gm_w(:,interf_idx)'*Z(:,:,user_idx,interf_idx)')';
