@@ -5,7 +5,7 @@ clear
 
 alpha = 0;    %coefficient for block fading model
 beta = 0.8^2;  % Attenuation loss from non-direct antennas
-n0 = 10^(-3);    %noise variance
+n0 = 10^(-2);    %noise variance
 
 Nt = 2;  %Nt antennas for each transmitter
 Nr = 2;  %Nr antennas for each receiver
@@ -16,9 +16,9 @@ mpower = ones(1, M);   %power for multicast
 upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
-iternums = 1:10; % number of iterations
-N_realization = 500; % Number of times to run simulation
-traininglength = 20; % traininglength 2M
+iternums = 1:100; % number of iterations
+N_realization = 10; % Number of times to run simulation
+traininglength = 1000; % traininglength 2M
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
@@ -77,11 +77,11 @@ for realization_idx = 1 : N_realization
             %%LS algorithm
             %%phase 1: backward training to update beamformer
             [Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            [Vu_w, Vm_w] = Wiener_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            [Vu_w, Vm_w] = Wiener_backward(Z, Gu_w, Gm_w, M2, n0, Bbw, BbwBr, upower, mpower);
             
             %%phase 2: forward training to update receive filter
             [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            [Gu_w, Gm_w] = Wiener_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            [Gu_w, Gm_w] = Wiener_forward(H, Vu_w, Vm_w, M1, n0, Bfw, BfwBr, upower, mpower);
             
         averagerateu(realization_idx, numiters) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
         averageratem(realization_idx, numiters) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
@@ -96,4 +96,4 @@ hold on
 plot(iternums, mean(averagerateu)+mean(averageratem), 'b',iternums, mean(averagerateu_w)+mean(averageratem_w), 'k');
 xlabel('Number of iterations')
 ylabel('Rates')
-title('Rates vs number of iterations at 0dB Cross Channel Gain')
+title('3 Users;2X2 MIMO Channel;\sigma^2=10^{-2}')

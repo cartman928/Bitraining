@@ -10,7 +10,7 @@ clear
 sigma = sqrt(10^(-3));
 
 FilterLength = 10; %FilterLength
-Realization=500;
+Realization=1000;
 
 
 for R=1:Realization
@@ -36,6 +36,7 @@ for R=1:Realization
         Z{3,2}=H{2,3}';
         Z{1,3}=H{3,1}';
         Z{2,3}=H{3,2}';
+        
 
         for k = 1:3
             gp(:,k)=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
@@ -149,6 +150,7 @@ for R=1:Realization
                     vc(:,k)=vc(:,k)/norm(vc(:,k));
                     vc_w(:,k)=vc_w(:,k)/norm(vc_w(:,k));
                     end
+                    
        
 
             %Forward Training  
@@ -250,6 +252,7 @@ for R=1:Realization
                 gc(:,k)=gc(:,k)/norm(gc(:,k));
                 gc_w(:,k)=gc_w(:,k)/norm(gc_w(:,k));
                 end      
+                
             
     
             %for SINR
@@ -333,7 +336,7 @@ end
 
 n=1:iteration;
 
-plot(   n,  mean(C_c_without_stat)+mean(C_p_without_stat),   'r', n,  mean(C_c_know_stat)+mean(C_p_know_stat), 'k' )
+plot(   n,  mean(C_c_without_stat)+mean(C_p_without_stat),   'r', n,  mean(C_c_know_stat)+mean(C_p_know_stat), 'y' )
 
 
 legend('C(Bi-Directional Training)','C(Max-SINR)')
