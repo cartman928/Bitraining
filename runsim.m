@@ -11,8 +11,8 @@ Nt = 2;  %Nt antennas for each transmitter
 Nr = 2;  %Nr antennas for each receiver
 M = 2;   %number of users
 
-upower = ones(1, M);   %power for unicastmpower 
-%upower = zeros(1, M);
+%upower = ones(1, M);   %power for unicastmpower 
+upower = zeros(1, M);
 mpower = ones(1, M);   %power for multicast
 %mpower = zeros(1, M);
 
@@ -113,7 +113,7 @@ for realization_idx = 1 : N_realization
             %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
             
             
-           
+        %{   
         averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
         averageratem(realization_idx, numiters, traininglength) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
         averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(H, n0, Vu_w, Gu_w, Vm_w, upower, mpower);
@@ -122,8 +122,9 @@ for realization_idx = 1 : N_realization
         Em(realization_idx, numiters,traininglength) = MSEm(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
         Eu_MaxSINR(realization_idx, numiters) = MSEu(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
         Em_MaxSINR(realization_idx, numiters) = MSEm(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
+        %}
         
-        %{    
+            
         averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(Z, n0, Gu, Vu, Gm, upower, mpower);
         averageratem(realization_idx, numiters, traininglength) = calculate_ratem(Z, n0, Gm, Vm, Gu, upower, mpower);
         averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(Z, n0, Gu_w, Vu_w, Gm_w, upower, mpower);
@@ -132,7 +133,7 @@ for realization_idx = 1 : N_realization
         Em(realization_idx, numiters,traininglength) = MSEm(Z, Vu, Vm, Gu, Gm, n0, upower, mpower);
         Eu_MaxSINR(realization_idx, numiters) = MSEu(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
         Em_MaxSINR(realization_idx, numiters) = MSEm(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
-        %}
+        
             
     end
             
