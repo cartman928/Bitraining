@@ -28,7 +28,9 @@ for user_idx = 1 : M
     Y(:,:,user_idx) = Y(:,:,user_idx) + interferencem*interferencem';
     
     Vu_w(:,user_idx) = Y(:,:,user_idx)\(Z(:,:,user_idx,user_idx)*upower(user_idx)*Gu_w(:,user_idx));
+    if norm(Vu_w(:,user_idx)) ~= 0
     Vu_w(:,user_idx) = Vu_w(:,user_idx)./norm(Vu_w(:,user_idx));
+    end
 end
 
 
