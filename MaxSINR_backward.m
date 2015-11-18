@@ -1,4 +1,4 @@
-function [Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, M2, n0, Bu, Bm, upower, mpower)
+function [Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, n0, upower, mpower)
 %update receive filters by least square algorithm
 
 [Nr,Nt,M,ignore] = size(Z);
