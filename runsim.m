@@ -10,12 +10,14 @@ n0 = 10^(-2);    %noise variance
 Nt = 2;  %Nt antennas for each transmitter
 Nr = 2;  %Nr antennas for each receiver
 M = 2;   %number of users
-Pmax = ones(1, M);    %maximum power for each user
-%upower = ones(1, M);   %power for unicastmpower 
-upower = zeros(1, M);
+
+upower = ones(1, M);   %power for unicastmpower 
+%upower = zeros(1, M);
 mpower = ones(1, M);   %power for multicast
-upower = sqrt(upower); % Change power to voltage
-mpower = sqrt(mpower); % Change power to voltage
+%mpower = zeros(1, M);
+
+%upower = sqrt(upower); % Change power to voltage
+%mpower = sqrt(mpower); % Change power to voltage
 
 iternums = 1:20; % number of iterations
 N_realization = 1000; % Number of times to run simulation
@@ -71,6 +73,8 @@ for realization_idx = 1 : N_realization
     Vu_w = zeros(Nt, M); % beamformer unicast
     Vm_w = zeros(Nt, M); % beamformer multicast
     
+   
+    
     
     %{
     Gu = zeros(Nt, M);
@@ -82,6 +86,8 @@ for realization_idx = 1 : N_realization
     Vu_w = InitialGu; % beamformer unicast
     Vm_w = InitialGm; % beamformer multicast
     %}
+    
+    
     
     for numiters = 1:length(iternums)
         BfwBr = sign(randn(M1,M));    %training symbols at the transmitter broadcast
@@ -103,8 +109,8 @@ for realization_idx = 1 : N_realization
             
             
             %%phase 2: forward training to update receive filter
-            %[Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
+            [Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            [Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
             
             
             

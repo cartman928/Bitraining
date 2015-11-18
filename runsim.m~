@@ -14,6 +14,7 @@ Pmax = ones(1, M);    %maximum power for each user
 %upower = ones(1, M);   %power for unicastmpower 
 upower = zeros(1, M);
 mpower = ones(1, M);   %power for multicast
+%mpower = zeros(1, M);
 upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
 
@@ -61,6 +62,7 @@ for realization_idx = 1 : N_realization
         InitialGm(:, k) = InitialGm(:, k)./norm(InitialGm(:, k));
     end
     
+    
     Gu = InitialGu;
     Gm = InitialGm;
     Gu_w = InitialGu;
@@ -69,6 +71,18 @@ for realization_idx = 1 : N_realization
     Vm = zeros(Nt, M); % beamformer multicast
     Vu_w = zeros(Nt, M); % beamformer unicast
     Vm_w = zeros(Nt, M); % beamformer multicast
+    
+    
+    %{
+    Gu = zeros(Nt, M);
+    Gm = zeros(Nt, M);
+    Gu_w = zeros(Nt, M);
+    Gm_w = zeros(Nt, M);
+    Vu = InitialGu; % beamformer unicast
+    Vm = InitialGm; % beamformer multicast
+    Vu_w = InitialGu; % beamformer unicast
+    Vm_w = InitialGm; % beamformer multicast
+    %}
     
     for numiters = 1:length(iternums)
         BfwBr = sign(randn(M1,M));    %training symbols at the transmitter broadcast
@@ -90,8 +104,8 @@ for realization_idx = 1 : N_realization
             
             
             %%phase 2: forward training to update receive filter
-            [Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            [Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
+            %[Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
             
             
             
@@ -139,8 +153,9 @@ legend([p10,p1,p7],'C(Max-SINR)',...
                   
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
-title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;No-Coop')
-%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
+%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations;No-Coop')
+%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations;Coop')
+title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations')
 axis([1 numiters 0 20])
 
 %% Plot MSE
