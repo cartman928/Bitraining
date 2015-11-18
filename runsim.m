@@ -96,10 +96,10 @@ for realization_idx = 1 : N_realization
         %% bi-directional training
             %%LS algorithm
             %%phase 1: backward training to update beamformer
-            [Vu, Vm] = LS(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
-            [Vu_w, Vm_w] = MaxSINR(Z, Gu_w, Gm_w, n0, upower, mpower);
-            %[Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            %[Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
+            %[Vu, Vm] = LS(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
+            %[Vu_w, Vm_w] = MaxSINR(Z, Gu_w, Gm_w, n0, upower, mpower);
+            [Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            [Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
             
             
             %%phase 2: forward training to update receive filter
@@ -152,9 +152,9 @@ legend([p10,p1,p7],'C(Max-SINR)',...
                   
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
-%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;No-Coop')
-%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
-title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
+%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations;No-Coop')
+%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations;Coop')
+title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realizations')
 axis([1 numiters 0 20])
 
 %% Plot MSE
