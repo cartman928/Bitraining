@@ -109,11 +109,11 @@ for realization_idx = 1 : N_realization
             
             
             %%phase 2: forward training to update receive filter
-            [Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            [Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
+            %[Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
             
             
-            
+        %{    
         averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
         averageratem(realization_idx, numiters, traininglength) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
         averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(H, n0, Vu_w, Gu_w, Vm_w, upower, mpower);
@@ -122,6 +122,17 @@ for realization_idx = 1 : N_realization
         Em(realization_idx, numiters,traininglength) = MSEm(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
         Eu_MaxSINR(realization_idx, numiters) = MSEu(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
         Em_MaxSINR(realization_idx, numiters) = MSEm(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
+        %}
+            
+        averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(Z, n0, Gu, Vu, Gm, upower, mpower);
+        averageratem(realization_idx, numiters, traininglength) = calculate_ratem(Z, n0, Gm, Vm, Gu, upower, mpower);
+        averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(Z, n0, Gu_w, Vu_w, Gm_w, upower, mpower);
+        averageratem_MaxSINR(realization_idx, numiters) = calculate_ratem(Z, n0, Gm_w, Vm_w, Gu_w, upower, mpower);
+        Eu(realization_idx, numiters,traininglength) = MSEu(Z, Vu, Vm, Gu, Gm, n0, upower, mpower);
+        Em(realization_idx, numiters,traininglength) = MSEm(Z, Vu, Vm, Gu, Gm, n0, upower, mpower);
+        Eu_MaxSINR(realization_idx, numiters) = MSEu(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
+        Em_MaxSINR(realization_idx, numiters) = MSEm(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
+            
     end
             
     
