@@ -11,7 +11,8 @@ Nt = 2;  %Nt antennas for each transmitter
 Nr = 2;  %Nr antennas for each receiver
 M = 2;   %number of users
 Pmax = ones(1, M);    %maximum power for each user
-upower = ones(1, M);   %power for unicastmpower 
+%upower = ones(1, M);   %power for unicastmpower 
+upower = zeros(1, M);
 mpower = ones(1, M);   %power for multicast
 upower = sqrt(upower); % Change power to voltage
 mpower = sqrt(mpower); % Change power to voltage
@@ -60,6 +61,7 @@ for realization_idx = 1 : N_realization
         InitialGm(:, k) = InitialGm(:, k)./norm(InitialGm(:, k));
     end
     
+    %{
     Gu = InitialGu;
     Gm = InitialGm;
     Gu_w = InitialGu;
@@ -68,6 +70,16 @@ for realization_idx = 1 : N_realization
     Vm = zeros(Nt, M); % beamformer multicast
     Vu_w = zeros(Nt, M); % beamformer unicast
     Vm_w = zeros(Nt, M); % beamformer multicast
+    %}
+    
+    Gu = zeros(Nt, M);
+    Gm = zeros(Nt, M);
+    Gu_w = zeros(Nt, M);
+    Gm_w = zeros(Nt, M);
+    Vu = InitialGu; % beamformer unicast
+    Vm = InitialGm; % beamformer multicast
+    Vu_w = InitialGu; % beamformer unicast
+    Vm_w = InitialGm; % beamformer multicast
     
     for numiters = 1:length(iternums)
         BfwBr = sign(randn(M1,M));    %training symbols at the transmitter broadcast
@@ -82,15 +94,15 @@ for realization_idx = 1 : N_realization
         %% bi-directional training
             %%LS algorithm
             %%phase 1: backward training to update beamformer
-            [Vu, Vm] = LS_backward(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
-            [Vu_w, Vm_w] = MaxSINR_backward(Z, Gu_w, Gm_w, n0, upower, mpower);
-            %[Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            %[Vu_w, Vm_w] = MaxSINR_backward_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
+            [Vu, Vm] = LS(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
+            [Vu_w, Vm_w] = MaxSINR(Z, Gu_w, Gm_w, n0, upower, mpower);
+            %[Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
             
             
             %%phase 2: forward training to update receive filter
-            [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            [Gu_w, Gm_w] = MaxSINR_forward(H, Vu_w, Vm_w, n0, upower, mpower);
+            %[Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
             
             
             
@@ -152,8 +164,8 @@ p14=plot(iternums, mean(Eu(:,:,10)),'Color',[0,0.4470,0.7410],'Marker','*');
 p15=plot(iternums,mean(Em(:,:,20)),'Color',[0.8500,0.3250,0.0980],'Marker','o');
 p16=plot(iternums, mean(Eu(:,:,20)),'Color',[0.8500,0.3250,0.0980],'Marker','*');
 
-p17=plot(iternums, mean(Em_MaxSINR),'k','Marker','*');
-p18=plot(iternums, mean(Eu_MaxSINR),'k','Marker','o');
+p17=plot(iternums, mean(Em_MaxSINR),'k','Marker','o');
+p18=plot(iternums, mean(Eu_MaxSINR),'k','Marker','*');
 
 xlabel('Number of iterations')
 ylabel('MSE')

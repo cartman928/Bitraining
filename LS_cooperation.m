@@ -1,6 +1,6 @@
-function [Vu, Vm] = LS_backward_cooperation(Z, Gu, Gm, M2, n0, Bu, Bm, upower, mpower)
-%update receive filters by least square algorithm
-
+function [Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bu, Bm, upower, mpower)
+%update filters by least square algorithm
+%notations are based on backward directions: G(transmitter),V(receiver)
 [Nr,Nt,M,ignore] = size(Z);
 
 Y = zeros(Nt,M2,M);

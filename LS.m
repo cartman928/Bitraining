@@ -1,5 +1,6 @@
 function [Gu, Gm] = LS_forward(H, Vu, Vm, M1, n0, Bu, Bm, upower, mpower)
-%update receive filters by least square algorithm
+%update filters by least square algorithm 
+%notations are based on forward directions: V(transmitter),G(receiver)
 
 [Nr,Nt,M,ignore] = size(H);
 

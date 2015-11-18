@@ -1,5 +1,6 @@
-function [Vu_w, Vm_w] = MaxSINR_backward_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower)
-%update receive filters by least square algorithm
+function [Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower)
+%update filters by MaxSINR algorithm
+%notations are based on backward directions: G(transmitter),V(receiver)
 
 [Nr,Nt,M,ignore] = size(Z);
 
