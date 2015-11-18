@@ -61,7 +61,7 @@ for realization_idx = 1 : N_realization
         InitialGm(:, k) = InitialGm(:, k)./norm(InitialGm(:, k));
     end
     
-    %{
+    
     Gu = InitialGu;
     Gm = InitialGm;
     Gu_w = InitialGu;
@@ -70,8 +70,9 @@ for realization_idx = 1 : N_realization
     Vm = zeros(Nt, M); % beamformer multicast
     Vu_w = zeros(Nt, M); % beamformer unicast
     Vm_w = zeros(Nt, M); % beamformer multicast
-    %}
     
+    
+    %{
     Gu = zeros(Nt, M);
     Gm = zeros(Nt, M);
     Gu_w = zeros(Nt, M);
@@ -80,6 +81,7 @@ for realization_idx = 1 : N_realization
     Vm = InitialGm; % beamformer multicast
     Vu_w = InitialGu; % beamformer unicast
     Vm_w = InitialGm; % beamformer multicast
+    %}
     
     for numiters = 1:length(iternums)
         BfwBr = sign(randn(M1,M));    %training symbols at the transmitter broadcast
@@ -150,8 +152,9 @@ legend([p10,p1,p7],'C(Max-SINR)',...
                   
 xlabel('Number of iterations')
 ylabel('C(bits/channel)')
-title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;No-Coop')
+%title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;No-Coop')
 %title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
+title('2 Users;2X2 MIMO Channel;\sigma^2=10^{-2};1000 Realization;Coop')
 axis([1 numiters 0 20])
 
 %% Plot MSE
