@@ -1,5 +1,6 @@
 function E = MSEm(H, Gu, Gm, Vu, Vm, n0, upower, mpower)
 %update receive filters by least square algorithm
+%notations are based on forward directions: V(transmitter),G(receiver)
 
 [Nr,Nt,M,ignore] = size(H);
 

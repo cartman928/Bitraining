@@ -29,9 +29,9 @@ end
 Big_Y = cell2mat(D);
 V = (Big_Y*Big_Y')\Big_Y*conj(Bm(:,1));
 if norm(V) ~= 0;
-V = sqrt(M)*V./norm(V);
+%V = sqrt(M)*V./norm(V);
 end
 
 for user_idx = 1 : M   
-    Vm(:,user_idx) = V(2*user_idx-1:2*user_idx,1);
+    Vm(:,user_idx) = V(2*user_idx-1:2*user_idx);
 end

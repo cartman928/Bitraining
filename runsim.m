@@ -19,8 +19,8 @@ mpower = ones(1, M);   %power for multicast
 %upower = sqrt(upower); % Change power to voltage
 %mpower = sqrt(mpower); % Change power to voltage
 
-iternums = 1:20; % number of iterations
-N_realization = 1000; % Number of times to run simulation
+iternums = 1:2; % number of iterations
+N_realization = 500; % Number of times to run simulation
 
 averagerateu = zeros(N_realization, length(iternums));
 averageratem = zeros(N_realization, length(iternums));
@@ -51,6 +51,8 @@ for realization_idx = 1 : N_realization
         end
     end  
     
+    
+    
     M1 = traininglength/2;
     M2 = traininglength/2;
     
@@ -64,6 +66,20 @@ for realization_idx = 1 : N_realization
     end
     
     
+    
+     
+    Gu = zeros(Nt, M);
+    Gm = zeros(Nt, M);
+    Gu_w = zeros(Nt, M);
+    Gm_w = zeros(Nt, M);
+    Vu = zeros(Nt, M); % beamformer unicast
+    Vm = InitialGm; % beamformer multicast
+    Vu_w = zeros(Nt, M); % beamformer unicast
+    Vm_w = InitialGm; % beamformer multicast
+    
+    
+    
+    %{
     Gu = InitialGu;
     Gm = InitialGm;
     Gu_w = InitialGu;
@@ -72,6 +88,7 @@ for realization_idx = 1 : N_realization
     Vm = zeros(Nt, M); % beamformer multicast
     Vu_w = zeros(Nt, M); % beamformer unicast
     Vm_w = zeros(Nt, M); % beamformer multicast
+    %}
     
    
     
@@ -103,28 +120,42 @@ for realization_idx = 1 : N_realization
             %%LS algorithm
             %%phase 1: backward training to update beamformer
             %[Vu, Vm] = LS(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower); 
-            %[Vu_w, Vm_w] = MaxSINR(Z, Gu_w, Gm_w, n0, upower, mpower);
-            [Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
-            [Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
+            %[Vu, Vm] = MaxSINR(Z, Gu_w, Gm_w, n0, upower, mpower);
+            %[Vu, Vm] = LS_cooperation(Z, Gu, Gm, M2, n0, Bbw, BbwBr, upower, mpower);
+            %[Vu_w, Vm_w] = MaxSINR_cooperation(Z, Gu_w, Gm_w, n0, upower, mpower);
             
-            
+         
             %%phase 2: forward training to update receive filter
             %[Gu, Gm] = LS(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
-            %[Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
+            [Gu_w0, Gm_w0] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower);
+            %[Gu_w, Gm_w] = MaxSINRm_only(H, Vu_w, Vm_w, n0, upower, mpower)
+            %[Gu, Gm] = LS_cooperation(H, Vu, Vm, M1, n0, Bfw, BfwBr, upower, mpower);
+            [Gu_w, Gm_w] = MaxSINR_cooperation(H, Vu_w, Vm_w, n0, upower, mpower);
             
+            K = [H(:,:,1,1) H(:,:,1,2);H(:,:,2,1) H(:,:,2,2)];
+            1-[Vm_w(:,1);Vm_w(:,2)]'*K'*[Gm_w0(:,1);Gm_w0(:,2)]-[Gm_w0(:,1);Gm_w0(:,2)]'*K*[Vm_w(:,1);Vm_w(:,2)]...
+             +[Gm_w0(:,1);Gm_w0(:,2)]'*K*[Vm_w(:,1);Vm_w(:,2)]*[Vm_w(:,1);Vm_w(:,2)]'*K'*[Gm_w0(:,1);Gm_w0(:,2)]+[Gm_w0(:,1);Gm_w0(:,2)]'*[Gm_w0(:,1);Gm_w0(:,2)]*n0
+
+            1-[Vm_w(:,1);Vm_w(:,2)]'*K'*[Gm_w(:,1);Gm_w(:,2)]-[Gm_w(:,1);Gm_w(:,2)]'*K*[Vm_w(:,1);Vm_w(:,2)]...
+             +[Gm_w(:,1);Gm_w(:,2)]'*K*[Vm_w(:,1);Vm_w(:,2)]*[Vm_w(:,1);Vm_w(:,2)]'*K'*[Gm_w(:,1);Gm_w(:,2)]+[Gm_w(:,1);Gm_w(:,2)]'*[Gm_w(:,1);Gm_w(:,2)]*n0 
+         
+            MSEm_only(H, Gu_w0, Gm_w0, Vu_w, Vm_w, n0, upower, mpower)
+            MSEm_only(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower)
             
-        %{   
+           
         averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(H, n0, Vu, Gu, Vm, upower, mpower);
         averageratem(realization_idx, numiters, traininglength) = calculate_ratem(H, n0, Vm, Gm, Vu, upower, mpower);
         averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(H, n0, Vu_w, Gu_w, Vm_w, upower, mpower);
         averageratem_MaxSINR(realization_idx, numiters) = calculate_ratem(H, n0, Vm_w, Gm_w, Vu_w, upower, mpower);
         Eu(realization_idx, numiters,traininglength) = MSEu(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
-        Em(realization_idx, numiters,traininglength) = MSEm(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
+        %Em(realization_idx, numiters,traininglength) = MSEm(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
+        Em(realization_idx, numiters,traininglength) = MSEm_only(H, Gu, Gm, Vu, Vm, n0, upower, mpower);
         Eu_MaxSINR(realization_idx, numiters) = MSEu(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
-        Em_MaxSINR(realization_idx, numiters) = MSEm(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
-        %}
+        %Em_MaxSINR(realization_idx, numiters) = MSEm(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
+        Em_MaxSINR(realization_idx, numiters) = MSEm_only(H, Gu_w, Gm_w, Vu_w, Vm_w, n0, upower, mpower);
         
-            
+        
+        %{    
         averagerateu(realization_idx, numiters, traininglength) = calculate_rateu(Z, n0, Gu, Vu, Gm, upower, mpower);
         averageratem(realization_idx, numiters, traininglength) = calculate_ratem(Z, n0, Gm, Vm, Gu, upower, mpower);
         averagerateu_MaxSINR(realization_idx, numiters) = calculate_rateu(Z, n0, Gu_w, Vu_w, Gm_w, upower, mpower);
@@ -133,6 +164,7 @@ for realization_idx = 1 : N_realization
         Em(realization_idx, numiters,traininglength) = MSEm(Z, Vu, Vm, Gu, Gm, n0, upower, mpower);
         Eu_MaxSINR(realization_idx, numiters) = MSEu(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
         Em_MaxSINR(realization_idx, numiters) = MSEm(Z, Vu_w, Vm_w, Gu_w, Gm_w, n0, upower, mpower);
+        %}
         
             
     end

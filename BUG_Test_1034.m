@@ -6,7 +6,9 @@ clear
 
 H=[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-g=[0;0];
+%g=[0;0];
+g=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+g=g/norm(g);
 v=[1;1];
 v_w=[1;1];
 v=v/norm(v);
@@ -28,21 +30,27 @@ C_Wiener = zeros(1,10^(7));
 SINR_without_stat = zeros(1,10^(7));
 SINR_know_stat= zeros(1,10^(7));
 
-Realization = 2;
+Realization = 1;
 TrainingLength = 200; %TrainingLength
 
 for R = 1:Realization
     
         v=[1;1];
         v_w=[1;1];
-        g=[0;0];
-        g_w=[0;0];
+        %g=[0;0];
+        %g_w=[0;0];
+        
+        g=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+        g_w=[randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1)];
+        
+        g=g/norm(g);
+        g_w=g_w/norm(g_w)
         
         v=v/norm(v);
         v_w=v_w/norm(v_w);
         H=[randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1);randn(1,1)+1i*randn(1,1) randn(1,1)+1i*randn(1,1)];
 
-for iteration = 1:50
+for iteration = 1:500
 
     
     iteration 

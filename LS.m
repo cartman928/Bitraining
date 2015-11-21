@@ -20,10 +20,10 @@ for user_idx = 1 : M
     end
     
     Gu(:,user_idx) = (Y(:,:,user_idx)*Y(:,:,user_idx)')\Y(:,:,user_idx)*conj(Bu(:,user_idx));
-    Gu(:,user_idx) = Gu(:,user_idx)./norm(Gu(:,user_idx));
+    %Gu(:,user_idx) = Gu(:,user_idx)./norm(Gu(:,user_idx));
     
     Gm(:,user_idx) = (Y(:,:,user_idx)*Y(:,:,user_idx)')\Y(:,:,user_idx)*conj(Bm(:,user_idx));
-    Gm(:,user_idx) = Gm(:,user_idx)./norm(Gm(:,user_idx));
+    %Gm(:,user_idx) = Gm(:,user_idx)./norm(Gm(:,user_idx));
 end
 
     

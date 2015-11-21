@@ -63,9 +63,11 @@ Gp = cell2mat(B);
 
 V = (Big_Z*Gc*Gc'*Big_Z'+Big_Z*Gp*Big_Z'+n0*eye(M*Nt))\(Big_Z*Gc);
 if norm(V) ~= 0
-V = sqrt(M)*V./norm(V);
+%V = sqrt(M)*V./norm(V);
 end
 
 for user_idx = 1 : M   
     Vm_w(:,user_idx) = V(2*user_idx-1:2*user_idx,1);
+    %Vm_w(:,user_idx) = V(2*user_idx-1:2*user_idx,1)/norm(V(2*user_idx-1:2*user_idx,1));
 end
+

@@ -1,4 +1,4 @@
-function [Gu_w, Gm_w] = MaxSINR_forward(H, Vu_w, Vm_w, n0, upower, mpower)
+function [Gu_w, Gm_w] = MaxSINR(H, Vu_w, Vm_w, n0, upower, mpower)
 %update filters by MaxSINR algorithm
 %notations are based on forward directions: V(transmitter),G(receiver)
 
@@ -29,12 +29,12 @@ for user_idx = 1 : M
     
     Gu_w(:,user_idx) = Y(:,:,user_idx)\(H(:,:,user_idx,user_idx)*upower(user_idx)*Vu_w(:,user_idx));
     if norm(Gu_w(:,user_idx)) ~= 0; %prevent divided by zero
-    Gu_w(:,user_idx) = Gu_w(:,user_idx)./norm(Gu_w(:,user_idx));
+    %Gu_w(:,user_idx) = Gu_w(:,user_idx)./norm(Gu_w(:,user_idx));
     end
     
     Gm_w(:,user_idx) = Y(:,:,user_idx)\signal;
     if norm(Gm_w(:,user_idx)) ~= 0; %prevent divided by zero
-    Gm_w(:,user_idx) = Gm_w(:,user_idx)./norm(Gm_w(:,user_idx));
+    %Gm_w(:,user_idx) = Gm_w(:,user_idx)./norm(Gm_w(:,user_idx));
     end
 end
 
